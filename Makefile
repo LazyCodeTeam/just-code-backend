@@ -3,3 +3,9 @@ run:
 
 test:
 	go test ./...
+
+dev_infra:
+	cd deployments/infrastructure/dev && terraform init && terraform apply
+
+dev_outputs:
+	cd deployments/infrastructure/dev && terraform output all_outputs
