@@ -29,6 +29,11 @@ resource "google_cloud_run_v2_service" "app" {
 
   depends_on = [google_project_service.run]
 }
+
+output "app_url" {
+  value = google_cloud_run_v2_service.app.uri
+}
+
 resource "google_cloud_run_service_iam_binding" "app" {
   location = google_cloud_run_v2_service.app.location
   service  = google_cloud_run_v2_service.app.name
