@@ -15,6 +15,7 @@ module "app" {
 
   env      = "dev"
   app_name = "just-code"
+  region   = "europe-central2"
 }
 
 output "all_outputs" {
