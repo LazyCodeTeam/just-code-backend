@@ -28,7 +28,7 @@ jobs:
         name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+          credentials_json: '${{ secrets.DEV_GCP_CREDENTIALS }}'
 
       - name: Login to Artifact Registry
         uses: 'docker/login-action@v1'
