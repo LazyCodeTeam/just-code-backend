@@ -16,7 +16,7 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
-        name  = "PORT"
+        name  = "APP_PORT"
         value = "8080"
       }
     }
