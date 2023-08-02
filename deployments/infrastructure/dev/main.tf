@@ -13,9 +13,10 @@ provider "google" {
 module "app" {
   source = "../base"
 
-  env      = "dev"
-  app_name = "just-code"
-  region   = "europe-central2"
+  env       = "dev"
+  app_name  = "just-code"
+  region    = "europe-central2"
+  image_tag = var.image_tag
 }
 
 output "all_outputs" {

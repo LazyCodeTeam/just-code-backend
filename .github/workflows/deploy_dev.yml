@@ -51,8 +51,15 @@ jobs:
             europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:latest
           push: true
 
-      - name: Deploy to cloud run
-        uses: 'google-github-actions/deploy-cloudrun@v1'
-        with:
-          service: 'just-code-dev'
-          image: 'europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:latest'
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Init terraform
+        working-directory: ./deployments/infrastructure/dev
+        run: terraform init
+
+      - name: Deploy
+        working-directory: ./deployments/infrastructure/dev
+        env:
+          TF_VAR_image_tag: ${{ env.IMAGE_TAG }}
+        run: terraform apply -auto-approve

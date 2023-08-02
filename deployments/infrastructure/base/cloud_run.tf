@@ -9,7 +9,7 @@ resource "google_cloud_run_v2_service" "app" {
 
   template {
     containers {
-      image = "europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:latest"
+      image = "europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:${var.image_tag}"
 
       ports {
         container_port = 8080

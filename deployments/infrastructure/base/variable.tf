@@ -14,3 +14,7 @@ variable "app_name" {
 variable "region" {
   type = string
 }
+
+variable "image_tag" {
+  type = string
+}
