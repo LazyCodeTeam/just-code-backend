@@ -50,4 +50,3 @@ jobs:
             europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:${{ env.IMAGE_TAG }}
             europe-central2-docker.pkg.dev/just-code-dev/just-code-dev/just-code-dev:latest
           push: true
-          provenance: false
