@@ -23,7 +23,7 @@ func NewHealthHandler() Handler {
 }
 
 func (h *healthHandler) Register(router chi.Router) {
-	router.Get("/api/v1/health", h.handleHttp)
+	router.Get("/api/health", h.handleHttp)
 }
 
 func (h *healthHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
