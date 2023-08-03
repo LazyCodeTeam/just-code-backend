@@ -5,17 +5,29 @@ terraform {
   }
 }
 
+locals {
+  region        = "europe-central2"
+  env           = "dev"
+  app_name      = "just-code"
+  full_app_name = "${local.app_name}-${local.env}"
+}
+
 provider "google" {
-  project = "just-code-dev"
-  region  = "europe-central2"
+  project = local.full_app_name
+  region  = local.region
+}
+
+provider "google-beta" {
+  project = local.full_app_name
+  region  = local.region
 }
 
 module "app" {
   source = "../base"
 
-  env       = "dev"
-  app_name  = "just-code"
-  region    = "europe-central2"
+  env       = local.env
+  app_name  = local.app_name
+  region    = local.region
   image_tag = var.image_tag
 }
 
