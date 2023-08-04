@@ -8,11 +8,9 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
 )
 
-// swagger:route GET /api/health health
+// swagger:route GET /api/v1/profile/current profile currentProfile
 //
-// # Health check
-//
-// This will check if the service is up and running.
+// # Get current profile
 //
 // Responses:
 //

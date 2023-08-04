@@ -9,6 +9,7 @@ import (
 	"firebase.google.com/go/v4/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	openapi "github.com/go-openapi/runtime/middleware"
 	"go.uber.org/fx"
 	"golang.org/x/exp/slog"
 
@@ -53,10 +54,27 @@ func newMux(
 ) *chi.Mux {
 	mux := chi.NewRouter()
 
+	redocOpts := openapi.RedocOpts{
+		SpecURL:  "swagger.yaml",
+		BasePath: "/api",
+		Path:     "/docs",
+	}
+	redoc := openapi.Redoc(redocOpts, nil)
+
+	swatterUIOpts := openapi.SwaggerUIOpts{
+		SpecURL:  "swagger.yaml",
+		BasePath: "/api",
+		Path:     "/swagger-ui",
+	}
+	swaggerUI := openapi.SwaggerUI(swatterUIOpts, nil)
+
 	mux.Use(middleware.RealIP)
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.Recoverer)
+	mux.Method(http.MethodGet, "/api/docs", redoc)
+	mux.Method(http.MethodGet, "/api/swagger-ui", swaggerUI)
+	mux.Method(http.MethodGet, "/api/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	for _, h := range handlers {
 		h.Register(mux)
