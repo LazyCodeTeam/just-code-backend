@@ -1,0 +1,71 @@
+basePath: /
+consumes:
+    - application/json
+definitions:
+    Error:
+        description: Error
+        properties:
+            args:
+                additionalProperties:
+                    type: string
+                description: Additional arguments
+                example:
+                    arg1: value1
+                    arg2: value2
+                type: object
+                x-go-name: Args
+            code:
+                description: Error code - for programmatic error handling
+                example: internal_server_error
+                type: string
+                x-go-name: Code
+            message:
+                description: Error message - human readable
+                example: Internal server error
+                type: string
+                x-go-name: Message
+        required:
+            - code
+            - message
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+info:
+    contact:
+        email: mateuszledwon@duck.com
+        name: Mateusz Ledwoń
+        url: https://github.com/Axot017
+    description: Documentation of JustCode API
+    title: JustCode API
+    version: 0.0.1
+paths:
+    /api/health:
+        get:
+            description: This will check if the service is up and running.
+            operationId: health
+            responses:
+                "200":
+                    $ref: '#/responses/emptyResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Health check
+    /api/v1/profile/current:
+        get:
+            operationId: currentProfile
+            responses:
+                "200":
+                    $ref: '#/responses/emptyResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get current profile
+            tags:
+                - profile
+produces:
+    - application/json
+responses:
+    emptyResponse:
+        description: Empty response
+    errorResponse:
+        description: Error response
+        schema:
+            $ref: '#/definitions/Error'
+swagger: "2.0"

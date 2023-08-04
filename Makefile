@@ -9,3 +9,6 @@ dev_infra:
 
 dev_outputs:
 	cd deployments/infrastructure/dev && terraform output all_outputs
+
+spec:
+	swagger generate spec -o ./api/swagger.yaml --scan-models

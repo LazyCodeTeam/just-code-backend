@@ -5,9 +5,13 @@ import (
 	"net"
 	"net/http"
 
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	openapi "github.com/go-openapi/runtime/middleware"
 	"go.uber.org/fx"
+	"golang.org/x/exp/slog"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/handler"
@@ -17,6 +21,8 @@ func StartServer() {
 	fx.New(
 		fx.Provide(
 			newServer,
+			newFirebaseApp,
+			newFirebaseAuthClient,
 			fx.Annotate(
 				newMux,
 				fx.ParamTags(`group:"routes"`),
@@ -48,10 +54,27 @@ func newMux(
 ) *chi.Mux {
 	mux := chi.NewRouter()
 
+	redocOpts := openapi.RedocOpts{
+		SpecURL:  "swagger.yaml",
+		BasePath: "/api",
+		Path:     "/docs",
+	}
+	redoc := openapi.Redoc(redocOpts, nil)
+
+	swatterUIOpts := openapi.SwaggerUIOpts{
+		SpecURL:  "swagger.yaml",
+		BasePath: "/api",
+		Path:     "/swagger-ui",
+	}
+	swaggerUI := openapi.SwaggerUI(swatterUIOpts, nil)
+
 	mux.Use(middleware.RealIP)
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.Recoverer)
+	mux.Method(http.MethodGet, "/api/docs", redoc)
+	mux.Method(http.MethodGet, "/api/swagger-ui", swaggerUI)
+	mux.Method(http.MethodGet, "/api/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	for _, h := range handlers {
 		h.Register(mux)
@@ -67,4 +90,29 @@ func newServer(mux *chi.Mux) *http.Server {
 	}
 
 	return &server
+}
+
+func newFirebaseApp() (*firebase.App, error) {
+	config := &firebase.Config{
+		ProjectID: "just-code-dev",
+	}
+	app, err := firebase.NewApp(context.Background(), config)
+	if err != nil {
+		slog.Error("Error initializing firebase app: %v\n", "error", err)
+
+		return nil, err
+	}
+
+	return app, nil
+}
+
+func newFirebaseAuthClient(app *firebase.App) (*auth.Client, error) {
+	client, err := app.Auth(context.Background())
+	if err != nil {
+		slog.Error("Error initializing firebase auth client: %v\n", "error", err)
+
+		return nil, err
+	}
+
+	return client, nil
 }

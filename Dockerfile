@@ -17,6 +17,8 @@ WORKDIR /app
 
 COPY --from=builder /app/justcode .
 
+COPY --from=builder /app/api/. ./api
+
 EXPOSE 8080
 
 CMD ["./justcode"]
