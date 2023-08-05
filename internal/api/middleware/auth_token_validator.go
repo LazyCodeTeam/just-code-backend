@@ -1,10 +1,15 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
 	"firebase.google.com/go/v4/auth"
+
+	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
 type AuthTokenValidator struct {
@@ -22,12 +27,47 @@ func (m *AuthTokenValidator) Handle(next http.Handler) http.Handler {
 		token := r.Header.Get("Authorization")
 		token = strings.Replace(token, "Bearer ", "", 1)
 
-		_, err := m.client.VerifyIDToken(r.Context(), token)
+		result, err := m.client.VerifyIDToken(r.Context(), token)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
+			util.WriteError(w, model.NewUnauthorizedError(err))
 			return
 		}
+		authData, err := getAuthDataFromToken(result)
+		if err != nil {
+			util.WriteError(w, model.NewUnauthorizedError(err))
+			return
+		}
+		ctx := coreUtil.ContextWithAuthData(r.Context(), authData)
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func getAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
+	switch token.Firebase.SignInProvider {
+	case "anonymous":
+		return &model.AuthData{
+			Type: model.AuthTypeAnonymous,
+		}, nil
+	case "password":
+		return getEmailAuthDataFromToken(token)
+	}
+	return nil, errors.New("unknown auth type")
+}
+
+func getEmailAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
+	email, ok := token.Claims["email"].(string)
+	if !ok {
+		return nil, errors.New("email not found")
+	}
+	verified, ok := token.Claims["email_verified"].(bool)
+	if !ok {
+		return nil, errors.New("email verified not found")
+	}
+
+	return &model.AuthData{
+		Type:     model.AuthTypeEmail,
+		Email:    &email,
+		Verified: verified,
+	}, nil
 }

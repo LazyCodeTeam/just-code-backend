@@ -10,10 +10,7 @@ import (
 func Providers() []interface{} {
 	return []interface{}{
 		middleware.NewAuthTokenValidator,
-		fx.Annotate(
-			handler.NewHealthHandler,
-			fx.ResultTags(`group:"routes"`),
-		),
+		handler.NewHealthHandler,
 		fx.Annotate(
 			handler.NewCurrentProfileHandler,
 			fx.ResultTags(`group:"routes"`),
