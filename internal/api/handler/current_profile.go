@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-
-	"github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
 )
 
 // swagger:route GET /api/v1/profile/current profile currentProfile
@@ -16,20 +14,14 @@ import (
 //
 //	200: emptyResponse
 //	500: errorResponse
-type currentProfileHandler struct {
-	authMiddleware *middleware.AuthTokenValidator
-}
+type currentProfileHandler struct{}
 
-func NewCurrentProfileHandler(
-	authMiddleware *middleware.AuthTokenValidator,
-) Handler {
-	return &currentProfileHandler{
-		authMiddleware: authMiddleware,
-	}
+func NewCurrentProfileHandler() Handler {
+	return &currentProfileHandler{}
 }
 
 func (h *currentProfileHandler) Register(router chi.Router) {
-	router.With(h.authMiddleware.Handle).Get("/api/v1/profile/current", h.handleHttp)
+	router.Get("/api/v1/profile/current", h.handleHttp)
 }
 
 func (h *currentProfileHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {

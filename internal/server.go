@@ -15,6 +15,7 @@ import (
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/handler"
+	appMiddleware "github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
 )
 
 func StartServer() {
@@ -51,6 +52,8 @@ func startListener(lc fx.Lifecycle, server *http.Server) {
 
 func newMux(
 	handlers []handler.Handler,
+	healthHandler *handler.HealthHandler,
+	authTokenValidator *appMiddleware.AuthTokenValidator,
 ) *chi.Mux {
 	mux := chi.NewRouter()
 
@@ -72,13 +75,19 @@ func newMux(
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.Recoverer)
+
 	mux.Method(http.MethodGet, "/api/docs", redoc)
 	mux.Method(http.MethodGet, "/api/swagger-ui", swaggerUI)
 	mux.Method(http.MethodGet, "/api/swagger.yaml", http.FileServer(http.Dir("./")))
 
-	for _, h := range handlers {
-		h.Register(mux)
-	}
+	healthHandler.Register(mux)
+
+	mux.Group(func(router chi.Router) {
+		router.Use(authTokenValidator.Handle)
+		for _, h := range handlers {
+			h.Register(router)
+		}
+	})
 
 	return mux
 }

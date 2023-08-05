@@ -16,16 +16,16 @@ import (
 //
 //	200: emptyResponse
 //	500: errorResponse
-type healthHandler struct{}
+type HealthHandler struct{}
 
-func NewHealthHandler() Handler {
-	return &healthHandler{}
+func NewHealthHandler() *HealthHandler {
+	return &HealthHandler{}
 }
 
-func (h *healthHandler) Register(router chi.Router) {
+func (h *HealthHandler) Register(router chi.Router) {
 	router.Get("/api/health", h.handleHttp)
 }
 
-func (h *healthHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
+func (h *HealthHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
