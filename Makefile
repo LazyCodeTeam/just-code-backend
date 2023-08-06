@@ -12,3 +12,12 @@ dev_outputs:
 
 spec:
 	swagger generate spec -o ./api/swagger.yaml --scan-models
+
+migrate_up:
+	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path db/migration up
+	
+migrate_down:
+	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path db/migration down
+
+sqlc:
+	sqlc generate
