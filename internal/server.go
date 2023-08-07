@@ -16,6 +16,8 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/api"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/handler"
 	appMiddleware "github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
+	"github.com/LazyCodeTeam/just-code-backend/internal/config"
+	"github.com/LazyCodeTeam/just-code-backend/internal/data"
 )
 
 func StartServer() {
@@ -24,12 +26,14 @@ func StartServer() {
 			newServer,
 			newFirebaseApp,
 			newFirebaseAuthClient,
+			config.New,
 			fx.Annotate(
 				newMux,
 				fx.ParamTags(`group:"routes"`),
 			),
 		),
 		fx.Provide(api.Providers()...),
+		fx.Provide(data.Providers()...),
 		fx.Invoke(startListener),
 	).Run()
 }

@@ -7,38 +7,41 @@ package db
 
 import (
 	"context"
-	"database/sql"
-	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createProfile = `-- name: CreateProfile :one
 INSERT INTO profile (
-  id, name, avatar_url, first_name, last_name, updated_at, created_at
+  id, name, avatar_url, first_name, last_name
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5
 )
+ON CONFLICT (id) DO UPDATE
+SET
+  name = $2,
+  avatar_url = $3,
+  first_name = $4,
+  last_name = $5,
+  updated_at = NOW()
 RETURNING id, name, avatar_url, first_name, last_name, updated_at, created_at
 `
 
 type CreateProfileParams struct {
 	ID        string
 	Name      string
-	AvatarUrl sql.NullString
-	FirstName sql.NullString
-	LastName  sql.NullString
-	UpdatedAt time.Time
-	CreatedAt time.Time
+	AvatarUrl pgtype.Text
+	FirstName pgtype.Text
+	LastName  pgtype.Text
 }
 
 func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (Profile, error) {
-	row := q.db.QueryRowContext(ctx, createProfile,
+	row := q.db.QueryRow(ctx, createProfile,
 		arg.ID,
 		arg.Name,
 		arg.AvatarUrl,
 		arg.FirstName,
 		arg.LastName,
-		arg.UpdatedAt,
-		arg.CreatedAt,
 	)
 	var i Profile
 	err := row.Scan(
@@ -59,7 +62,7 @@ WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetProfileById(ctx context.Context, id string) (Profile, error) {
-	row := q.db.QueryRowContext(ctx, getProfileById, id)
+	row := q.db.QueryRow(ctx, getProfileById, id)
 	var i Profile
 	err := row.Scan(
 		&i.ID,

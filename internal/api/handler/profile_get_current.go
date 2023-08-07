@@ -14,16 +14,16 @@ import (
 //
 //	200: emptyResponse
 //	500: errorResponse
-type currentProfileHandler struct{}
+type profileGetCurrentHandler struct{}
 
-func NewCurrentProfileHandler() Handler {
-	return &currentProfileHandler{}
+func NewProfileGetCurrentHandler() Handler {
+	return &profileGetCurrentHandler{}
 }
 
-func (h *currentProfileHandler) Register(router chi.Router) {
+func (h *profileGetCurrentHandler) Register(router chi.Router) {
 	router.Get("/api/v1/profile/current", h.handleHttp)
 }
 
-func (h *currentProfileHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
+func (h *profileGetCurrentHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
