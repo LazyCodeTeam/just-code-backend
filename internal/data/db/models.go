@@ -5,16 +5,15 @@
 package db
 
 import (
-	"database/sql"
-	"time"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Profile struct {
 	ID        string
 	Name      string
-	AvatarUrl sql.NullString
-	FirstName sql.NullString
-	LastName  sql.NullString
-	UpdatedAt time.Time
-	CreatedAt time.Time
+	AvatarUrl pgtype.Text
+	FirstName pgtype.Text
+	LastName  pgtype.Text
+	UpdatedAt pgtype.Timestamptz
+	CreatedAt pgtype.Timestamptz
 }

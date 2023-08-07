@@ -12,7 +12,11 @@ func Providers() []interface{} {
 		middleware.NewAuthTokenValidator,
 		handler.NewHealthHandler,
 		fx.Annotate(
-			handler.NewCurrentProfileHandler,
+			handler.NewProfileGetCurrentHandler,
+			fx.ResultTags(`group:"routes"`),
+		),
+		fx.Annotate(
+			handler.NewProfilePutCurrentHandler,
 			fx.ResultTags(`group:"routes"`),
 		),
 	}
