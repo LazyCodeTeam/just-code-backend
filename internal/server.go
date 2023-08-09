@@ -11,12 +11,13 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	openapi "github.com/go-openapi/runtime/middleware"
 	"go.uber.org/fx"
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/handler"
 	appMiddleware "github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
 	"github.com/LazyCodeTeam/just-code-backend/internal/config"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data"
 )
 
@@ -34,6 +35,7 @@ func StartServer() {
 		),
 		fx.Provide(api.Providers()...),
 		fx.Provide(data.Providers()...),
+		fx.Provide(core.Providers()...),
 		fx.Invoke(startListener),
 	).Run()
 }

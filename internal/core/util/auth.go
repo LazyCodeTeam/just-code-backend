@@ -19,3 +19,11 @@ func ExtractAuthData(ctx context.Context) *model.AuthData {
 	}
 	return authData
 }
+
+func ExtractCurrentUserId(ctx context.Context) *string {
+	authData := ExtractAuthData(ctx)
+	if authData == nil {
+		return nil
+	}
+	return &authData.Id
+}

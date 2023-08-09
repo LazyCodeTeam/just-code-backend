@@ -6,6 +6,7 @@ import (
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
 func WriteError(writer http.ResponseWriter, err error) {
@@ -14,7 +15,7 @@ func WriteError(writer http.ResponseWriter, err error) {
 	if ok {
 		errorModel = e
 	} else {
-		errorModel = model.NewUnknownError(err)
+		errorModel = model.NewError(usecase.ErrorTypeUnknown)
 	}
 
 	dto := dto.ErrorFromModel(*errorModel)

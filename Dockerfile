@@ -1,5 +1,5 @@
 
-FROM golang:1.20-alpine3.17 as builder
+FROM golang:1.21-alpine3.18 as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 
 RUN go build -o ./justcode cmd/justcode/main.go
 
-FROM alpine:3.17
+FROM alpine:3.18
 
 WORKDIR /app
 

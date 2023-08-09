@@ -9,6 +9,7 @@ import (
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
@@ -29,12 +30,12 @@ func (m *AuthTokenValidator) Handle(next http.Handler) http.Handler {
 
 		result, err := m.client.VerifyIDToken(r.Context(), token)
 		if err != nil {
-			util.WriteError(w, model.NewUnauthorizedError(err))
+			util.WriteError(w, model.NewError(usecase.ErrorTypeUnauthorized))
 			return
 		}
 		authData, err := getAuthDataFromToken(result)
 		if err != nil {
-			util.WriteError(w, model.NewUnauthorizedError(err))
+			util.WriteError(w, model.NewError(usecase.ErrorTypeUnauthorized))
 			return
 		}
 		ctx := coreUtil.ContextWithAuthData(r.Context(), authData)
@@ -48,6 +49,7 @@ func getAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
 	case "anonymous":
 		return &model.AuthData{
 			Type: model.AuthTypeAnonymous,
+			Id:   token.UID,
 		}, nil
 	case "password":
 		return getEmailAuthDataFromToken(token)
@@ -69,5 +71,6 @@ func getEmailAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
 		Type:     model.AuthTypeEmail,
 		Email:    &email,
 		Verified: verified,
+		Id:       token.UID,
 	}, nil
 }

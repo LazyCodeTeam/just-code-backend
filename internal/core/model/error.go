@@ -2,35 +2,26 @@ package model
 
 import "fmt"
 
-const (
-	ErrorUnknown      = "unknown_error"
-	ErrorUnauthorized = "unauthorized_error"
-)
+type ErrorType string
 
 type Error struct {
-	OriginalError error
-	Type          string
-	Args          map[string]interface{}
+	Type ErrorType
+	Args map[string]interface{}
+}
+
+func NewError(t ErrorType) *Error {
+	return &Error{
+		Type: t,
+	}
+}
+
+func NewErrorWithArgs(t ErrorType, a map[string]interface{}) *Error {
+	return &Error{
+		Type: t,
+		Args: a,
+	}
 }
 
 func (e *Error) Error() string {
-	if e.OriginalError == nil {
-		return fmt.Sprintf("%s", e.Type)
-	}
-
-	return fmt.Sprintf("%s: %s", e.Type, e.OriginalError.Error())
-}
-
-func NewUnknownError(original error) *Error {
-	return &Error{
-		OriginalError: original,
-		Type:          ErrorUnknown,
-	}
-}
-
-func NewUnauthorizedError(original error) *Error {
-	return &Error{
-		OriginalError: original,
-		Type:          ErrorUnauthorized,
-	}
+	return fmt.Sprintf("%v - %#v", e.Type, e.Args)
 }
