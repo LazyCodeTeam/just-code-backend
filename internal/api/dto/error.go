@@ -1,9 +1,8 @@
 package dto
 
 import (
-	"net/http"
-
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
 // Error
@@ -30,40 +29,44 @@ type Error struct {
 }
 
 func ErrorFromModel(err model.Error) Error {
-	code := typeToCode[err.Type]
-	if code == "" {
-		code = "internal_server_error"
-	}
-
-	message := typeToMessage[err.Type]
+	message := mapTypeToMessage(err)
 	if message == "" {
-		message = err.OriginalError.Error()
+		message = err.Error()
 	}
 
-	statusCode := typeToStatusCode[err.Type]
+	statusCode := mapTypeToStatusCode(err)
 	if statusCode == 0 {
 		statusCode = 500
 	}
 
 	return Error{
-		Code:       code,
+		Code:       string(err.Type),
 		Message:    message,
 		Args:       err.Args,
 		StatusCode: statusCode,
 	}
 }
 
-var typeToCode = map[string]string{
-	model.ErrorUnknown:      "internal_server_error",
-	model.ErrorUnauthorized: "unauthorized",
+func mapTypeToMessage(err model.Error) string {
+	switch err.Type {
+	case usecase.ErrorTypeUnknown:
+		return "Internal server error"
+	case usecase.ErrorTypeUnauthorized:
+		return "Unauthorized"
+	case usecase.ErrorTypeNotFound:
+		return "Not found"
+	}
+	return err.Error()
 }
 
-var typeToMessage = map[string]string{
-	model.ErrorUnknown:      "Internal server error",
-	model.ErrorUnauthorized: "Unauthorized",
-}
-
-var typeToStatusCode = map[string]int{
-	model.ErrorUnknown:      http.StatusInternalServerError,
-	model.ErrorUnauthorized: http.StatusUnauthorized,
+func mapTypeToStatusCode(err model.Error) int {
+	switch err.Type {
+	case usecase.ErrorTypeUnknown:
+		return 500
+	case usecase.ErrorTypeUnauthorized:
+		return 401
+	case usecase.ErrorTypeNotFound:
+		return 404
+	}
+	return 500
 }

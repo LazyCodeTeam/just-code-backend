@@ -4,14 +4,18 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/fx"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/config"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
+	"github.com/LazyCodeTeam/just-code-backend/internal/data/adapter"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
 )
 
 func Providers() []interface{} {
 	return []interface{}{
 		NewDB,
+		fx.Annotate(adapter.NewPgProfileRepository, fx.As(new(port.ProfileRepository))),
 	}
 }
 
