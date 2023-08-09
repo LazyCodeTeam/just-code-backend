@@ -8,7 +8,6 @@ require (
 	github.com/go-openapi/runtime v0.26.0
 	github.com/jackc/pgx/v5 v5.4.3
 	go.uber.org/fx v1.20.0
-	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 )
 
 require (
