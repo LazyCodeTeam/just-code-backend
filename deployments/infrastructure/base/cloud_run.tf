@@ -19,11 +19,58 @@ resource "google_cloud_run_v2_service" "app" {
         name  = "APP_PORT"
         value = "8080"
       }
+
+      env {
+        name  = "APP_ENV"
+        value = var.env
+      }
+
+      env {
+        name  = "DB_NAME"
+        value = google_sql_database.database.name
+      }
+
+      env {
+        name  = "DB_CONNECTION_NAME"
+        value = google_sql_database_instance.instance.connection_name
+      }
+
+      env {
+        name = "DB_USER"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.dbuser.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DB_PASS"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.dbpass.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
     }
 
     scaling {
       min_instance_count = 0
       max_instance_count = 1
+    }
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.instance.connection_name]
+      }
     }
   }
 
