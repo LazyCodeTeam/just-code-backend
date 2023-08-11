@@ -46,7 +46,7 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
-        name = "DB_PASS"
+        name = "DB_PASSWORD"
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.dbpass.secret_id
