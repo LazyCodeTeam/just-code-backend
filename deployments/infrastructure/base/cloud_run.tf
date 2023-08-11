@@ -32,7 +32,7 @@ resource "google_cloud_run_v2_service" "app" {
 
       env {
         name  = "DB_CONNECTION_NAME"
-        value = google_sql_database_instance.instance.connection_name
+        value = "/cloudsql/${google_sql_database_instance.instance.connection_name}"
       }
 
       env {
