@@ -27,10 +27,10 @@ func dbConnectionUrl() string {
 	name := os.Getenv("DB_NAME")
 
 	return fmt.Sprintf(
-		"postgres://%s:%s@unix(%s)/%s?parseTime=true",
+		"user=%s password=%s database=%s host=%s",
 		user,
 		password,
-		connectionName,
 		name,
+		connectionName,
 	)
 }
