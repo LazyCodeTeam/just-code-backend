@@ -44,14 +44,24 @@ jobs:
 
       - name: Insall migrate
         run: |
+          mkdir migrate
+          cd migrate
           curl -L https://github.com/golang-migrate/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz | tar xvz
-          sudo mv migrate.linux-amd64/migrate /usr/bin/migrate 
+          sudo mv migrate /usr/bin/migrate 
+          cd ..
+          rm -r migrate
 
       - name: Insall cloud sql proxy
         run: |
+          mkdir proxy
+          cd proxy
+
           curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/$CLOUD_SQL_PROXY_VERSION/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy 
           sudo mv cloud-sql-proxy /usr/bin/cloud-sql-proxy
+
+          cd ..
+          rm -r proxy
 
       - name: Build and upload image
         uses: docker/build-push-action@v4
