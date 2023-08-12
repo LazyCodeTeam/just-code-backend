@@ -89,19 +89,16 @@ jobs:
           TF_VAR_image_tag: ${{ env.IMAGE_TAG }}
         run: terraform apply -auto-approve
 
-      - id: sql_connection_name
-        name: Get sql connection name
-        working-directory: ./deployments/infrastructure/dev
-        run: |
-          echo "connection_name=$(terraform output db_connection_name | sed 's/^.//;s/.$//')" >> "$GITHUB_OUTPUT"
-
       - name: Migrate DB
         env:
           DB_USER: ${{ secrets.DB_URL_ENCODED_USER }}
           DB_PASSWORD: ${{ secrets.DB_URL_ENCODED_PASSWORD }}
-          DB_CONNECTION_NAME: ${{ steps.sql_connection_name.outputs.connection_name}}
         run: |
-          cloud-sql-proxy $DB_CONNECTION_NAME &
+          cd deployments/infrastructure/dev
+          CONNECTION_NAME=$(terraform output db_connection_name | sed 's/^.//;s/.$//')
+          cd ../../..
+
+          cloud-sql-proxy $CONNECTION_NAME &
           PROXY_PID=$!
           migrate -database "postgres://$DB_USER:$DB_PASSWORD@localhost:5432/just-code?sslmode=disable" -path db/migration down
           kill -9 $PROXY_PID
