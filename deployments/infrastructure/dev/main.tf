@@ -35,3 +35,8 @@ output "all_outputs" {
   value     = module.app
   sensitive = true
 }
+
+output "db_connection_name" {
+  value     = module.app.db_connection_name
+  sensitive = true
+}
