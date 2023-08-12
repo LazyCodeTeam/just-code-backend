@@ -98,10 +98,14 @@ jobs:
           CONNECTION_NAME=$(terraform-bin output db_connection_name | sed 's/^.//;s/.$//')
           cd ../../..
 
-          echo $CONNECTION_NAME 
           cloud-sql-proxy $CONNECTION_NAME &
           PROXY_PID=$!
-          migrate -database "postgres://$DB_USER:$DB_PASSWORD@localhost:5432/just-code?sslmode=disable" -path db/migration down
+          echo "pid: $PROXY_PID"
+          echo "Sleeping"
+          sleep 5
+          echo "Migrate"
+          migrate -database "postgres://$DB_USER:$DB_PASSWORD@127.0.0.1:5432/just-code?sslmode=disable" -path db/migration down
+          echo "Kill"
           kill -9 $PROXY_PID
 
           
