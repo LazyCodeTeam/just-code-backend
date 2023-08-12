@@ -94,9 +94,7 @@ jobs:
           DB_USER: ${{ secrets.DB_URL_ENCODED_USER }}
           DB_PASSWORD: ${{ secrets.DB_URL_ENCODED_PASSWORD }}
         run: |
-          cd deployments/infrastructure/dev
-          CONNECTION_NAME=$(terraform output db_connection_name | sed 's/^.//;s/.$//')
-          cd ../../..
+          cd deployments/infrastructure/dev && CONNECTION_NAME=$(terraform output db_connection_name | sed 's/^.//;s/.$//')
 
           cloud-sql-proxy $CONNECTION_NAME &
           PROXY_PID=$!
