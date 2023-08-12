@@ -13,3 +13,8 @@ resource "google_sql_database" "database" {
   name     = "just-code"
   instance = google_sql_database_instance.instance.name
 }
+
+output "db_connection_name" {
+  value     = google_sql_database_instance.instance.connection_name
+  sensitive = true
+}

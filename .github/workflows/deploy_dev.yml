@@ -6,6 +6,10 @@ on:
     branches:
       - master
 
+env:
+  MIGRATE_VERSION: v4.16.2
+  CLOUD_SQL_PROXY_VERSION: v2.6.0
+
 jobs:
   upload-dev-mage:
     runs-on: ubuntu-latest
@@ -38,6 +42,18 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
+      - name: Insall migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz | tar xvz
+          chmod +x migrate.linux-amd64
+          sudo mv migrate.linux-amd64 /usr/bin/migrate
+
+      - name: Insall cloud sql proxy
+        run: |
+          curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/$CLOUD_SQL_PROXY_VERSION/cloud-sql-proxy.linux.amd64
+          chmod +xcloud-sql-proxy 
+          sudo mv cloud-sql-proxy /usr/bin/cloud-sql-proxy
+
       - name: Build and upload image
         uses: docker/build-push-action@v4
         with:
@@ -63,3 +79,22 @@ jobs:
         env:
           TF_VAR_image_tag: ${{ env.IMAGE_TAG }}
         run: terraform apply -auto-approve
+
+      - id: sql_connection_name
+        name: Get sql connection name
+        working-directory: ./deployments/infrastructure/dev
+        run: |
+          echo "connection_name=$(terraform output db_connection_name)" >> "$GITHUB_OUTPUT"
+
+      - name: Migrate DB
+        env:
+          DB_USER: ${{ secrets.DB_URL_ENCODED_USER }}
+          DB_PASSWORD: ${{ secrets.DB_URL_ENCODED_PASSWORD }}
+          DB_CONNECTION_NAME: ${{ steps.sql_connection_name.outputs.connection_name}}
+        run: |
+          cloud-sql-proxy $DB_CONNECTION_NAME &
+          PROXY_PID=$!
+          migrate -database "postgres://$DB_USER:$DB_PASSWORD@localhost:5432/just-code?sslmode=disable" -path db/migration down
+          kill -9 $PROXY_PID
+
+          
