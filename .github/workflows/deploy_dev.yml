@@ -95,8 +95,18 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_URL_ENCODED_PASSWORD }}
         run: |
           cd deployments/infrastructure/dev
-          CONNECTION_NAME=$(terraform output db_connection_name | sed 's/^.//;s/.$//')
+          echo "PWD: \n"
+          echo $PWD
+          CONNECTION_NAME=$(terraform output db_connection_name)
+          echo "CONNECTION_NAME: \n"
+          echo $CONNECTION_NAME
+          CONNECTION_NAME=$(echo $CONNECTION_NAME | sed 's/^.//;s/.$//')
+          echo "CONNECTION_NAME_2: \n"
+          echo $CONNECTION_NAME
           cd ../../..
+          echo "PWD_2: \n"
+          echo $PWD
+
           echo $CONNECTION_NAME 
           cloud-sql-proxy $CONNECTION_NAME &
           PROXY_PID=$!
