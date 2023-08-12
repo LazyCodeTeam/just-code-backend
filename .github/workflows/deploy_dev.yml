@@ -94,7 +94,7 @@ jobs:
           DB_USER: ${{ secrets.DB_URL_ENCODED_USER }}
           DB_PASSWORD: ${{ secrets.DB_URL_ENCODED_PASSWORD }}
         run: |
-          connection_name=$(terraform output db_connection_name)
+          connection_name=$(terraform output db_connection_name  | sed 's/^.//;s/.$//')
           cloud-sql-proxy $connection_name &
           PROXY_PID=$!
           migrate -database "postgres://$DB_USER:$DB_PASSWORD@localhost:5432/just-code?sslmode=disable" -path db/migration down
