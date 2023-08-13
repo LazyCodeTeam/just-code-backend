@@ -5,7 +5,7 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
-// Error
+// ErrorDto
 //
 // swagger:model
 type Error struct {
