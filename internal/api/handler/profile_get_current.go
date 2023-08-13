@@ -5,17 +5,26 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
-// swagger:route GET /api/v1/profile/current profile currentProfile
+// swagger:response profileGetCurrentResponse
+type profileGetCurrentResponse struct {
+	// The error message
+	// in: body
+	Body dto.Profile
+}
+
+// swagger:route GET /api/v1/profile/current profile profileGetCurrent
 //
 // # Get current profile
 //
 // Responses:
 //
-//	200: emptyResponse
+//	200: profileGetCurrentResponse
+//	401: errorResponse
 //	500: errorResponse
 type profileGetCurrentHandler struct {
 	getCurrentUser *usecase.GetCurrentUser
@@ -39,5 +48,5 @@ func (h *profileGetCurrentHandler) handleHttp(writer http.ResponseWriter, reques
 		util.WriteError(writer, err)
 		return
 	}
-	util.WriteResponseJson(writer, profile)
+	util.WriteResponseJson(writer, dto.ProfileFromModel(profile))
 }

@@ -3,11 +3,10 @@ consumes:
     - application/json
 definitions:
     Error:
-        description: Error
+        description: ErrorDto
         properties:
             args:
-                additionalProperties:
-                    type: string
+                additionalProperties: {}
                 description: Additional arguments
                 example:
                     arg1: value1
@@ -27,6 +26,33 @@ definitions:
         required:
             - code
             - message
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Profile:
+        description: ProfileDto
+        properties:
+            avatar_url:
+                description: User avatar url
+                example: https://example.com/avatar.png
+                type: string
+                x-go-name: AvatarUrl
+            first_name:
+                description: User first name
+                example: John
+                type: string
+                x-go-name: FirstName
+            last_name:
+                description: User last name
+                example: Doe
+                type: string
+                x-go-name: LastName
+            nickname:
+                description: User nickname
+                example: johndoe
+                type: string
+                x-go-name: Nickname
+        required:
+            - nickname
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:
@@ -50,6 +76,18 @@ paths:
             summary: Health check
     /api/v1/profile/current:
         get:
+            operationId: profileGetCurrent
+            responses:
+                "200":
+                    $ref: '#/responses/profileGetCurrentResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get current profile
+            tags:
+                - profile
+        put:
             operationId: currentProfile
             responses:
                 "200":
@@ -65,7 +103,18 @@ responses:
     emptyResponse:
         description: Empty response
     errorResponse:
-        description: Error response
+        description: ""
         schema:
             $ref: '#/definitions/Error'
+    profileGetCurrentResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/Profile'
+security:
+    - bearer_auth: []
+securityDefinitions:
+    bearer_auth:
+        in: header
+        name: Authorization
+        type: apiKey
 swagger: "2.0"
