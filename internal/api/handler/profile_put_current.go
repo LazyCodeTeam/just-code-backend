@@ -15,10 +15,14 @@ import (
 //
 // # Update current profile
 //
+// Creates new profile for current user or updates existing one. If profile already exists all fields will be updated.
+// Nickname must be unique, otherwise 409 error will be returned.
+//
 // Responses:
 //
 //	200: emptyResponse
 //	401: errorResponse
+//	409: errorResponse
 //	500: errorResponse
 type profilePutCurrentHandler struct {
 	updateCurrentprofile *usecase.UpdateCurrentProfile
