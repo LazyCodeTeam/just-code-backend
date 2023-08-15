@@ -2,40 +2,9 @@ basePath: /
 consumes:
     - application/json
 definitions:
-    Error:
-        description: ErrorDto
+    CreateProfileParams:
+        description: CreateProfileParamsDto
         properties:
-            args:
-                additionalProperties: {}
-                description: Additional arguments
-                example:
-                    arg1: value1
-                    arg2: value2
-                type: object
-                x-go-name: Args
-            code:
-                description: Error code - for programmatic error handling
-                example: internal_server_error
-                type: string
-                x-go-name: Code
-            message:
-                description: Error message - human readable
-                example: Internal server error
-                type: string
-                x-go-name: Message
-        required:
-            - code
-            - message
-        type: object
-        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
-    Profile:
-        description: ProfileDto
-        properties:
-            avatar_url:
-                description: User avatar url
-                example: https://example.com/avatar.png
-                type: string
-                x-go-name: AvatarUrl
             first_name:
                 description: User first name
                 example: John
@@ -53,6 +22,66 @@ definitions:
                 x-go-name: Nickname
         required:
             - nickname
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Error:
+        description: ErrorDto
+        properties:
+            args:
+                additionalProperties: {}
+                description: Additional arguments
+                example:
+                    arg1: value1
+                    arg2: value2
+                type: object
+                x-go-name: Args
+            code:
+                description: Error code - for programmatic error handling
+                example: internal_server_error
+                type: string
+                x-go-name: Code
+        required:
+            - code
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Profile:
+        description: ProfileDto
+        properties:
+            avatar_url:
+                description: User avatar url
+                example: https://example.com/avatar.png
+                type: string
+                x-go-name: AvatarUrl
+            created_at:
+                description: User created at
+                example: "2021-01-01T00:00:00Z"
+                format: date-time
+                type: string
+                x-go-name: CreatedAt
+            first_name:
+                description: User first name
+                example: John
+                type: string
+                x-go-name: FirstName
+            id:
+                description: User id
+                example: 123e4567-e89b-12d3-a456-426614174000
+                type: string
+                x-go-name: Id
+            last_name:
+                description: User last name
+                example: Doe
+                type: string
+                x-go-name: LastName
+            nickname:
+                description: User nickname
+                example: johndoe
+                type: string
+                x-go-name: Nickname
+        required:
+            - id
+            - nickname
+            - created_at
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:
@@ -82,19 +111,23 @@ paths:
                     $ref: '#/responses/profileGetCurrentResponse'
                 "401":
                     $ref: '#/responses/errorResponse'
+                "404":
+                    $ref: '#/responses/errorResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Get current profile
             tags:
                 - profile
         put:
-            operationId: currentProfile
+            operationId: profilePutCurrent
             responses:
                 "200":
                     $ref: '#/responses/emptyResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
-            summary: Get current profile
+            summary: Update current profile
             tags:
                 - profile
 produces:

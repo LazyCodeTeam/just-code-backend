@@ -4,25 +4,34 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 
-	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
+	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
+	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
-// swagger:route PUT /api/v1/profile/current profile currentProfile
+// swagger:route PUT /api/v1/profile/current profile profilePutCurrent
 //
-// # Get current profile
+// # Update current profile
 //
 // Responses:
 //
 //	200: emptyResponse
+//	401: errorResponse
 //	500: errorResponse
 type profilePutCurrentHandler struct {
-	db *db.Queries
+	updateCurrentprofile *usecase.UpdateCurrentProfile
+	validate             *validator.Validate
 }
 
-func NewProfilePutCurrentHandler(db *db.Queries) Handler {
+func NewProfilePutCurrentHandler(
+	updateCurrentprofile *usecase.UpdateCurrentProfile,
+	validate *validator.Validate,
+) Handler {
 	return &profilePutCurrentHandler{
-		db,
+		updateCurrentprofile: updateCurrentprofile,
+		validate:             validate,
 	}
 }
 
@@ -31,13 +40,18 @@ func (h *profilePutCurrentHandler) Register(router chi.Router) {
 }
 
 func (h *profilePutCurrentHandler) handleHttp(writer http.ResponseWriter, request *http.Request) {
-	_, err := h.db.CreateProfile(request.Context(), db.CreateProfileParams{
-		ID:   "1",
-		Name: "test",
-	})
+	body, err := util.DeserializeAndValidateBody[dto.CreateProfileParams](request, h.validate)
 	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
+		util.WriteError(writer, err)
+
 		return
 	}
+	err = h.updateCurrentprofile.Invoke(request.Context(), dto.CreateProfileParamsToModel(body))
+	if err != nil {
+		util.WriteError(writer, err)
+
+		return
+	}
+
 	writer.WriteHeader(http.StatusOK)
 }

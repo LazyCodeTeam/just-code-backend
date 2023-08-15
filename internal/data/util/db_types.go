@@ -8,3 +8,11 @@ func UnwrapDbString(value pgtype.Text) *string {
 	}
 	return &value.String
 }
+
+func ToDbString(value *string) pgtype.Text {
+	if value == nil {
+		return pgtype.Text{Valid: false}
+	}
+
+	return pgtype.Text{String: *value, Valid: true}
+}
