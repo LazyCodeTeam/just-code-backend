@@ -105,6 +105,7 @@ paths:
             summary: Health check
     /api/v1/profile/current:
         get:
+            description: Returns current profile. If profile does not exist 404 error will be returned.
             operationId: profileGetCurrent
             responses:
                 "200":
@@ -119,11 +120,16 @@ paths:
             tags:
                 - profile
         put:
+            description: |-
+                Creates new profile for current user or updates existing one. If profile already exists all fields will be updated.
+                Nickname must be unique, otherwise 409 error will be returned.
             operationId: profilePutCurrent
             responses:
                 "200":
                     $ref: '#/responses/emptyResponse'
                 "401":
+                    $ref: '#/responses/errorResponse'
+                "409":
                     $ref: '#/responses/errorResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
@@ -135,6 +141,8 @@ produces:
 responses:
     emptyResponse:
         description: Empty response
+        schema:
+            type: object
     errorResponse:
         description: ""
         schema:

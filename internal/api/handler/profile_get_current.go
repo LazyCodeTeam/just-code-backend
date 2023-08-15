@@ -21,6 +21,8 @@ type profileGetCurrentResponse struct {
 //
 // # Get current profile
 //
+// Returns current profile. If profile does not exist 404 error will be returned.
+//
 // Responses:
 //
 //	200: profileGetCurrentResponse

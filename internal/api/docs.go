@@ -28,7 +28,10 @@ import "github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
 
 // Empty response
 // swagger:response emptyResponse
-type emptyResponse struct{}
+type emptyResponse struct {
+	// in: body
+	Body struct{}
+}
 
 // swagger:response errorResponse
 type errorResponse struct {
