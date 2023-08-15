@@ -5,17 +5,16 @@ import (
 	"net/http"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
-	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
-	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
 )
 
 func WriteError(writer http.ResponseWriter, err error) {
-	var errorModel *model.Error
-	e, ok := err.(*model.Error)
+	var errorModel *failure.Failure
+	e, ok := err.(*failure.Failure)
 	if ok {
 		errorModel = e
 	} else {
-		errorModel = model.NewError(usecase.ErrorTypeUnknown)
+		errorModel = failure.New(failure.FailureTypeUnknown)
 	}
 
 	dto := dto.ErrorFromModel(*errorModel)

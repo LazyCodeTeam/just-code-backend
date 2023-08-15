@@ -8,8 +8,8 @@ import (
 	"firebase.google.com/go/v4/auth"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
-	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
@@ -30,12 +30,12 @@ func (m *AuthTokenValidator) Handle(next http.Handler) http.Handler {
 
 		result, err := m.client.VerifyIDToken(r.Context(), token)
 		if err != nil {
-			util.WriteError(w, model.NewError(usecase.ErrorTypeUnauthorized))
+			util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
 			return
 		}
 		authData, err := getAuthDataFromToken(result)
 		if err != nil {
-			util.WriteError(w, model.NewError(usecase.ErrorTypeUnauthorized))
+			util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
 			return
 		}
 		ctx := coreUtil.ContextWithAuthData(r.Context(), authData)

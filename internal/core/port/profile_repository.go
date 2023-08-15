@@ -8,4 +8,6 @@ import (
 
 type ProfileRepository interface {
 	GetProfileById(context.Context, string) (*model.Profile, error)
+
+	UpsertProfile(context.Context, string, model.CreateProfileParams) error
 }

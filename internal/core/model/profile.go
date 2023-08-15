@@ -3,6 +3,7 @@ package model
 import "time"
 
 type Profile struct {
+	Id        string
 	Nick      string
 	FirstName *string
 	LastName  *string

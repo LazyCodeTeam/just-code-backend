@@ -8,6 +8,7 @@ import (
 
 func ProfleToDomain(profile db.Profile) model.Profile {
 	return model.Profile{
+		Id:        profile.ID,
 		Nick:      profile.Name,
 		FirstName: util.UnwrapDbString(profile.FirstName),
 		LastName:  util.UnwrapDbString(profile.LastName),

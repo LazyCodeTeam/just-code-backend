@@ -25,6 +25,7 @@ type profileGetCurrentResponse struct {
 //
 //	200: profileGetCurrentResponse
 //	401: errorResponse
+//	404: errorResponse
 //	500: errorResponse
 type profileGetCurrentHandler struct {
 	getCurrentUser *usecase.GetCurrentUser
