@@ -14,11 +14,7 @@ func Providers() []interface{} {
 		handler.NewHealthHandler,
 		validator.New,
 		fx.Annotate(
-			handler.NewProfileGetCurrentHandler,
-			fx.ResultTags(`group:"routes"`),
-		),
-		fx.Annotate(
-			handler.NewProfilePutCurrentHandler,
+			handler.NewProfileHandler,
 			fx.ResultTags(`group:"routes"`),
 		),
 	}

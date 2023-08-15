@@ -88,7 +88,7 @@ func newMux(
 
 	healthHandler.Register(mux)
 
-	mux.Group(func(router chi.Router) {
+	mux.Route("/api", func(router chi.Router) {
 		router.Use(authTokenValidator.Handle)
 		for _, h := range handlers {
 			h.Register(router)
