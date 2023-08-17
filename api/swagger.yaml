@@ -136,6 +136,22 @@ paths:
             summary: Update current profile
             tags:
                 - profile
+    /api/v1/profile/current/avatar:
+        put:
+            description: |-
+                Image must be in jpeg or png format. Max size is 2MB.
+                Should be send as binary data in request body.
+            operationId: profilePutCurrentAvatar
+            responses:
+                "200":
+                    $ref: '#/responses/emptyResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Upload current profile avatar.
+            tags:
+                - profile
 produces:
     - application/json
 responses:
@@ -151,6 +167,13 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/Profile'
+    profilePutCurrentAvatar:
+        description: ""
+        schema:
+            items:
+                format: uint8
+                type: integer
+            type: array
 security:
     - bearer_auth: []
 securityDefinitions:

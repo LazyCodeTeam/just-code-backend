@@ -15,6 +15,5 @@ func CreateProfileParamsFromModel(
 		Name:      params.Nick,
 		FirstName: util.ToDbString(params.FirstName),
 		LastName:  util.ToDbString(params.LastName),
-		AvatarUrl: util.ToDbString(params.AvatarUrl),
 	}
 }

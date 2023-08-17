@@ -15,6 +15,10 @@ variable "region" {
   type = string
 }
 
+variable "multiregion" {
+  type = string
+}
+
 variable "image_tag" {
   type = string
 }

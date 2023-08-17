@@ -11,6 +11,7 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/mapper"
+	"github.com/LazyCodeTeam/just-code-backend/internal/data/util"
 )
 
 const (
@@ -60,6 +61,23 @@ func (r *PgProfileRepository) UpsertProfile(
 			)
 		}
 		slog.ErrorContext(ctx, "Failed to upsert profile", "err", err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *PgProfileRepository) UpdateProfileAvatar(
+	ctx context.Context,
+	profileId string,
+	url string,
+) error {
+	err := r.queries.UpdateProfileAvatar(ctx, db.UpdateProfileAvatarParams{
+		ID:        profileId,
+		AvatarUrl: util.ToDbString(&url),
+	})
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to update profile avatar", "err", err)
 		return err
 	}
 

@@ -13,16 +13,15 @@ import (
 
 const createProfile = `-- name: CreateProfile :one
 INSERT INTO profile (
-  id, name, avatar_url, first_name, last_name
+  id, name, first_name, last_name
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 )
 ON CONFLICT (id) DO UPDATE
 SET
   name = $2,
-  avatar_url = $3,
-  first_name = $4,
-  last_name = $5,
+  first_name = $3,
+  last_name = $4,
   updated_at = NOW()
 RETURNING id, name, avatar_url, first_name, last_name, updated_at, created_at
 `
@@ -30,7 +29,6 @@ RETURNING id, name, avatar_url, first_name, last_name, updated_at, created_at
 type CreateProfileParams struct {
 	ID        string
 	Name      string
-	AvatarUrl pgtype.Text
 	FirstName pgtype.Text
 	LastName  pgtype.Text
 }
@@ -39,7 +37,6 @@ func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (P
 	row := q.db.QueryRow(ctx, createProfile,
 		arg.ID,
 		arg.Name,
-		arg.AvatarUrl,
 		arg.FirstName,
 		arg.LastName,
 	)
@@ -74,4 +71,20 @@ func (q *Queries) GetProfileById(ctx context.Context, id string) (Profile, error
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const updateProfileAvatar = `-- name: UpdateProfileAvatar :exec
+UPDATE profile SET
+  avatar_url = $2
+WHERE id = $1
+`
+
+type UpdateProfileAvatarParams struct {
+	ID        string
+	AvatarUrl pgtype.Text
+}
+
+func (q *Queries) UpdateProfileAvatar(ctx context.Context, arg UpdateProfileAvatarParams) error {
+	_, err := q.db.Exec(ctx, updateProfileAvatar, arg.ID, arg.AvatarUrl)
+	return err
 }
