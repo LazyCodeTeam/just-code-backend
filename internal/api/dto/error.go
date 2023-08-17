@@ -47,6 +47,8 @@ func mapTypeToStatusCode(err failure.Failure) int {
 		return http.StatusNotFound
 	case failure.FailureTypeValueNotUnique:
 		return http.StatusConflict
+	case failure.FailureTypeUnsupportedFileType:
+		return http.StatusUnsupportedMediaType
 	}
 	return http.StatusInternalServerError
 }

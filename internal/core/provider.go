@@ -6,5 +6,6 @@ func Providers() []interface{} {
 	return []interface{}{
 		usecase.NewGetCurrentUser,
 		usecase.NewUpdateCurrentProfile,
+		usecase.NewUploadProfileAvatar,
 	}
 }

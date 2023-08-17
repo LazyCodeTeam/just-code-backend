@@ -7,6 +7,7 @@ terraform {
 
 locals {
   region        = "europe-central2"
+  multiregion   = "EU"
   env           = "dev"
   app_name      = "just-code"
   full_app_name = "${local.app_name}-${local.env}"
@@ -25,10 +26,11 @@ provider "google-beta" {
 module "app" {
   source = "../base"
 
-  env       = local.env
-  app_name  = local.app_name
-  region    = local.region
-  image_tag = var.image_tag
+  env         = local.env
+  app_name    = local.app_name
+  region      = local.region
+  multiregion = local.multiregion
+  image_tag   = var.image_tag
 }
 
 output "all_outputs" {
