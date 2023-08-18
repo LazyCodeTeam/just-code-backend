@@ -2,38 +2,32 @@ package usecase
 
 import (
 	"context"
-	"io"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
-type UploadProfileAvatar struct {
+type DeleteProfileAvatar struct {
 	profileRepository port.ProfileRepository
 	fileRepository    port.FileRepository
 }
 
-func NewUploadProfileAvatar(
+func NewDeleteProfileAvatar(
 	profileRepository port.ProfileRepository,
 	fileRepository port.FileRepository,
-) *UploadProfileAvatar {
-	return &UploadProfileAvatar{
+) *DeleteProfileAvatar {
+	return &DeleteProfileAvatar{
 		profileRepository: profileRepository,
 		fileRepository:    fileRepository,
 	}
 }
 
-func (u *UploadProfileAvatar) Invoke(ctx context.Context, imageReader io.Reader) error {
+func (u *DeleteProfileAvatar) Invoke(ctx context.Context) error {
 	profileId := util.ExtractCurrentUserId(ctx)
-	url, err := u.fileRepository.UploadProfileAvatar(ctx, imageReader, *profileId)
+	err := u.fileRepository.DeleteProfileAvatar(ctx, *profileId)
 	if err != nil {
-		return err
-	}
-	err = u.profileRepository.SetProfileAvatar(ctx, *profileId, &url)
-	if err != nil {
-		_ = u.fileRepository.DeleteProfileAvatar(ctx, *profileId)
 		return err
 	}
 
-	return nil
+	return u.profileRepository.SetProfileAvatar(ctx, *profileId, nil)
 }
