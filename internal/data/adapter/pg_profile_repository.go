@@ -67,14 +67,14 @@ func (r *PgProfileRepository) UpsertProfile(
 	return nil
 }
 
-func (r *PgProfileRepository) UpdateProfileAvatar(
+func (r *PgProfileRepository) SetProfileAvatar(
 	ctx context.Context,
 	profileId string,
-	url string,
+	url *string,
 ) error {
 	err := r.queries.UpdateProfileAvatar(ctx, db.UpdateProfileAvatarParams{
 		ID:        profileId,
-		AvatarUrl: util.ToDbString(&url),
+		AvatarUrl: util.ToDbString(url),
 	})
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to update profile avatar", "err", err)

@@ -7,5 +7,6 @@ func Providers() []interface{} {
 		usecase.NewGetCurrentUser,
 		usecase.NewUpdateCurrentProfile,
 		usecase.NewUploadProfileAvatar,
+		usecase.NewDeleteProfileAvatar,
 	}
 }

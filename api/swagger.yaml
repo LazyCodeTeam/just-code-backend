@@ -137,6 +137,18 @@ paths:
             tags:
                 - profile
     /api/v1/profile/current/avatar:
+        delete:
+            operationId: profileDeleteCurrentAvatar
+            responses:
+                "200":
+                    $ref: '#/responses/emptyResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: '# Delete current profile avatar.'
+            tags:
+                - profile
         put:
             description: |-
                 Image must be in jpeg or png format. Max size is 2MB.

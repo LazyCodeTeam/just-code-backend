@@ -9,7 +9,7 @@ import (
 type ProfileRepository interface {
 	GetProfileById(context.Context, string) (*model.Profile, error)
 
-	UpdateProfileAvatar(ctx context.Context, profileId string, url string) error
+	SetProfileAvatar(ctx context.Context, profileId string, url *string) error
 
 	UpsertProfile(context.Context, string, model.CreateProfileParams) error
 }

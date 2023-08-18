@@ -30,6 +30,7 @@ type profileHandler struct {
 	getCurrentUser       *usecase.GetCurrentUser
 	updateCurrentprofile *usecase.UpdateCurrentProfile
 	uploadProfileAvatar  *usecase.UploadProfileAvatar
+	deleteProfileAvatar  *usecase.DeleteProfileAvatar
 	validate             *validator.Validate
 }
 
@@ -37,12 +38,14 @@ func NewProfileHandler(
 	getCurrentUser *usecase.GetCurrentUser,
 	updateCurrentprofile *usecase.UpdateCurrentProfile,
 	uploadProfileAvatar *usecase.UploadProfileAvatar,
+	deleteProfileAvatar *usecase.DeleteProfileAvatar,
 	validate *validator.Validate,
 ) Handler {
 	return &profileHandler{
 		getCurrentUser:       getCurrentUser,
 		updateCurrentprofile: updateCurrentprofile,
 		uploadProfileAvatar:  uploadProfileAvatar,
+		deleteProfileAvatar:  deleteProfileAvatar,
 		validate:             validate,
 	}
 }
@@ -89,12 +92,25 @@ func (h *profileHandler) Register(router chi.Router) {
 		//	200: emptyResponse
 		//	401: errorResponse
 		//	500: errorResponse
-		router.With(middleware.RequestSize(2*1024*1024)).
-			With(app_middleware.AcceptedBodyFileTypes(
+		router.With(
+			middleware.RequestSize(2*1024*1024),
+			app_middleware.AcceptedBodyFileTypes(
 				"image/jpeg",
 				"image/png",
-			)).
+			),
+		).
 			Put("/current/avatar", h.handlePutCurrentAvatar)
+
+			// swagger:route DELETE /api/v1/profile/current/avatar profile profileDeleteCurrentAvatar
+			//
+			// # Delete current profile avatar.
+			//
+			// Responses:
+			//
+			//	200: emptyResponse
+			//	401: errorResponse
+			//	500: errorResponse
+		router.Delete("/current/avatar", h.handleDeleteCurrentAvatar)
 	})
 }
 
@@ -129,6 +145,18 @@ func (h *profileHandler) handlePutCurrentAvatar(
 	request *http.Request,
 ) {
 	err := h.uploadProfileAvatar.Invoke(request.Context(), request.Body)
+	if err != nil {
+		util.WriteError(writer, err)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+}
+
+func (h *profileHandler) handleDeleteCurrentAvatar(
+	writer http.ResponseWriter,
+	request *http.Request,
+) {
+	err := h.deleteProfileAvatar.Invoke(request.Context())
 	if err != nil {
 		util.WriteError(writer, err)
 		return
