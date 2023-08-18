@@ -123,7 +123,12 @@ paths:
             description: |-
                 Creates new profile for current user or updates existing one. If profile already exists all fields will be updated.
                 Nickname must be unique, otherwise 409 error will be returned.
-            operationId: profilePutCurrent
+            operationId: profilePutCurrentParams
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/CreateProfileParams'
             responses:
                 "200":
                     $ref: '#/responses/emptyResponse'
@@ -153,7 +158,15 @@ paths:
             description: |-
                 Image must be in jpeg or png format. Max size is 2MB.
                 Should be send as binary data in request body.
-            operationId: profilePutCurrentAvatar
+            operationId: profilePutCurrentAvatarParams
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    items:
+                        format: uint8
+                        type: integer
+                    type: array
             responses:
                 "200":
                     $ref: '#/responses/emptyResponse'
@@ -179,13 +192,6 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/Profile'
-    profilePutCurrentAvatar:
-        description: ""
-        schema:
-            items:
-                format: uint8
-                type: integer
-            type: array
 security:
     - bearer_auth: []
 securityDefinitions:
