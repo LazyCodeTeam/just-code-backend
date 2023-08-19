@@ -16,6 +16,16 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
+        name  = "BUCKET_NAME"
+        value = google_storage_bucket.main.name
+      }
+
+      env {
+        name  = "CDN_BASE_URL"
+        value = google_compute_global_address.cdn.address
+      }
+
+      env {
         name  = "APP_PORT"
         value = "8080"
       }
