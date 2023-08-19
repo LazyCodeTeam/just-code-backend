@@ -143,6 +143,7 @@ paths:
                 - profile
     /api/v1/profile/current/avatar:
         delete:
+            description: Avatar will be deleted from storage.
             operationId: profileDeleteCurrentAvatar
             responses:
                 "200":
@@ -151,7 +152,7 @@ paths:
                     $ref: '#/responses/errorResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
-            summary: '# Delete current profile avatar.'
+            summary: Delete current profile avatar.
             tags:
                 - profile
         put:
