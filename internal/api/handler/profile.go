@@ -85,6 +85,20 @@ func (h *profileHandler) Register(router chi.Router) {
 		//	409: errorResponse
 		//	500: errorResponse
 		router.Put("/current", h.handlePutCurrent)
+
+		// swagger:route DELETE /api/v1/profile/current/avatar profile profileDeleteCurrentAvatar
+		//
+		// # Delete current profile avatar.
+		//
+		// Avatar will be deleted from storage.
+		//
+		// Responses:
+		//
+		//	200: emptyResponse
+		//	401: errorResponse
+		//	500: errorResponse
+		router.Delete("/current/avatar", h.handleDeleteCurrentAvatar)
+
 		// swagger:route PUT /api/v1/profile/current/avatar profile profilePutCurrentAvatarParams
 		//
 		// # Upload current profile avatar.
@@ -98,27 +112,15 @@ func (h *profileHandler) Register(router chi.Router) {
 		//	200: emptyResponse
 		//	401: errorResponse
 		//	500: errorResponse
-		router.With(
-			middleware.RequestSize(2*1024*1024),
-			app_middleware.AcceptedBodyFileTypes(
-				"image/jpeg",
-				"image/png",
-			),
-		).
+		router.
+			With(
+				middleware.RequestSize(2*1024*1024),
+				app_middleware.AcceptedBodyFileTypes(
+					"image/jpeg",
+					"image/png",
+				),
+			).
 			Put("/current/avatar", h.handlePutCurrentAvatar)
-
-			// swagger:route DELETE /api/v1/profile/current/avatar profile profileDeleteCurrentAvatar
-			//
-			// # Delete current profile avatar.
-			//
-			// Avatar will be deleted from storage.
-			//
-			// Responses:
-			//
-			//	200: emptyResponse
-			//	401: errorResponse
-			//	500: errorResponse
-		router.Delete("/current/avatar", h.handleDeleteCurrentAvatar)
 	})
 }
 
