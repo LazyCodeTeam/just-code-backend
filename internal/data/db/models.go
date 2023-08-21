@@ -17,3 +17,38 @@ type Profile struct {
 	UpdatedAt pgtype.Timestamptz
 	CreatedAt pgtype.Timestamptz
 }
+
+type Section struct {
+	ID           pgtype.UUID
+	TechnologyID pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Position     int32
+	UpdatedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+}
+
+type Task struct {
+	ID         pgtype.UUID
+	SectionID  pgtype.UUID
+	Title      string
+	ImageUrl   pgtype.Text
+	Difficulty int32
+	Content    []byte
+	Position   int32
+	IsDynamic  bool
+	IsPublic   bool
+	UpdatedAt  pgtype.Timestamptz
+	CreatedAt  pgtype.Timestamptz
+}
+
+type Technology struct {
+	ID          pgtype.UUID
+	Title       string
+	Description pgtype.Text
+	ImageUrl    pgtype.Text
+	Position    int32
+	UpdatedAt   pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+}

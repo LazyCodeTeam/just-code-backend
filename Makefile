@@ -17,7 +17,7 @@ migrate_up:
 	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path db/migration up
 	
 migrate_down:
-	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path db/migration down
+	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path db/migration down -all
 
 sqlc:
 	sqlc generate
