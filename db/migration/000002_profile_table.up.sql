@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE profile (
   id varchar(64) NOT NULL,
   name varchar(64) NOT NULL UNIQUE,
@@ -10,3 +12,5 @@ CREATE TABLE profile (
 );
 
 SELECT manage_updated_at('profile');
+
+COMMIT;

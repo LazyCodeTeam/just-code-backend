@@ -11,19 +11,87 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const getAllSectionTasks = `-- name: GetAllSectionTasks :many
+SELECT id, section_id, title, image_url, difficulty, content, position, is_dynamic, is_public, updated_at, created_at FROM task WHERE section_id = $1 ORDER BY position ASC
+`
+
+func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID) ([]Task, error) {
+	rows, err := q.db.Query(ctx, getAllSectionTasks, sectionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.SectionID,
+			&i.Title,
+			&i.ImageUrl,
+			&i.Difficulty,
+			&i.Content,
+			&i.Position,
+			&i.IsDynamic,
+			&i.IsPublic,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllTechnologies = `-- name: GetAllTechnologies :many
+SELECT id, title, description, image_url, position, updated_at, created_at FROM technology ORDER BY position ASC
+`
+
+func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) {
+	rows, err := q.db.Query(ctx, getAllTechnologies)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Technology
+	for rows.Next() {
+		var i Technology
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.ImageUrl,
+			&i.Position,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllTechnologiesWithSectionsPreview = `-- name: GetAllTechnologiesWithSectionsPreview :many
 SELECT technology.id, technology.title, technology.description, technology.image_url, technology.position, technology.updated_at, technology.created_at, 
-section.id as section_id, 
-section.position, 
-section.title as section_title, 
-section.description as section_description, 
-section.image_url as section_image_url
+  section.id as section_id, 
+  section.position, 
+  section.title as section_title, 
+  section.description as section_description, 
+  section.image_url as section_image_url
 FROM technology
 LEFT JOIN section ON section.technology_id = technology.id
 ORDER BY technology.position ASC, section.position ASC
 `
 
-type GetAllTechnologiesRow struct {
+type GetAllTechnologiesWithSectionsPreviewRow struct {
 	ID                 pgtype.UUID
 	Title              string
 	Description        pgtype.Text
@@ -38,15 +106,15 @@ type GetAllTechnologiesRow struct {
 	SectionImageUrl    pgtype.Text
 }
 
-func (q *Queries) GetAllTechnologies(ctx context.Context) ([]GetAllTechnologiesRow, error) {
-	rows, err := q.db.Query(ctx, getAllTechnologies)
+func (q *Queries) GetAllTechnologiesWithSectionsPreview(ctx context.Context) ([]GetAllTechnologiesWithSectionsPreviewRow, error) {
+	rows, err := q.db.Query(ctx, getAllTechnologiesWithSectionsPreview)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllTechnologiesRow
+	var items []GetAllTechnologiesWithSectionsPreviewRow
 	for rows.Next() {
-		var i GetAllTechnologiesRow
+		var i GetAllTechnologiesWithSectionsPreviewRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
@@ -69,4 +137,231 @@ func (q *Queries) GetAllTechnologies(ctx context.Context) ([]GetAllTechnologiesR
 		return nil, err
 	}
 	return items, nil
+}
+
+const getAllTechnologySections = `-- name: GetAllTechnologySections :many
+SELECT id, technology_id, title, description, image_url, position, updated_at, created_at FROM section WHERE technology_id = $1 ORDER BY position ASC
+`
+
+func (q *Queries) GetAllTechnologySections(ctx context.Context, technologyID pgtype.UUID) ([]Section, error) {
+	rows, err := q.db.Query(ctx, getAllTechnologySections, technologyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Section
+	for rows.Next() {
+		var i Section
+		if err := rows.Scan(
+			&i.ID,
+			&i.TechnologyID,
+			&i.Title,
+			&i.Description,
+			&i.ImageUrl,
+			&i.Position,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllTechnolotySectionsWithTasksPreview = `-- name: GetAllTechnolotySectionsWithTasksPreview :many
+SELECT section.id, section.technology_id, section.title, section.description, section.image_url, section.position, section.updated_at, section.created_at, 
+  task.id as task_id, 
+  task.position, 
+  task.title as task_title, 
+  task.image_url as task_image_url
+FROM section
+LEFT JOIN task ON task.section_id = section.id
+WHERE section.technology_id = $1
+ORDER BY section.position ASC, task.position ASC
+`
+
+type GetAllTechnolotySectionsWithTasksPreviewRow struct {
+	ID           pgtype.UUID
+	TechnologyID pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Position     int32
+	UpdatedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	TaskID       pgtype.UUID
+	Position_2   pgtype.Int4
+	TaskTitle    pgtype.Text
+	TaskImageUrl pgtype.Text
+}
+
+func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, technologyID pgtype.UUID) ([]GetAllTechnolotySectionsWithTasksPreviewRow, error) {
+	rows, err := q.db.Query(ctx, getAllTechnolotySectionsWithTasksPreview, technologyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllTechnolotySectionsWithTasksPreviewRow
+	for rows.Next() {
+		var i GetAllTechnolotySectionsWithTasksPreviewRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.TechnologyID,
+			&i.Title,
+			&i.Description,
+			&i.ImageUrl,
+			&i.Position,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+			&i.TaskID,
+			&i.Position_2,
+			&i.TaskTitle,
+			&i.TaskImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const upsertSection = `-- name: UpsertSection :exec
+INSERT INTO section (
+  id,
+  technology_id,
+  title,
+  description,
+  image_url,
+  position 
+) VALUES (
+  $1, $2, $3, $4, $5, $6
+)
+ON CONFLICT (id) DO UPDATE
+SET
+  technology_id = $2,
+  title = $3,
+  description = $4,
+  image_url = $5,
+  position = $6,
+  updated_at = NOW()
+`
+
+type UpsertSectionParams struct {
+	ID           pgtype.UUID
+	TechnologyID pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Position     int32
+}
+
+func (q *Queries) UpsertSection(ctx context.Context, arg UpsertSectionParams) error {
+	_, err := q.db.Exec(ctx, upsertSection,
+		arg.ID,
+		arg.TechnologyID,
+		arg.Title,
+		arg.Description,
+		arg.ImageUrl,
+		arg.Position,
+	)
+	return err
+}
+
+const upsertTask = `-- name: UpsertTask :exec
+INSERT INTO task (
+  id,
+  section_id,
+  title,
+  image_url,
+  difficulty,
+  content,
+  position,
+  is_dynamic,
+  is_public
+) VALUES (
+  $1, $2, $3, $4, $5, $6, $7, $8, $9
+)
+ON CONFLICT (id) DO UPDATE
+SET
+  section_id = $2,
+  title = $3,
+  image_url = $4,
+  difficulty = $5,
+  content = $6,
+  position = $7,
+  is_dynamic = $8,
+  is_public = $9,
+  updated_at = NOW()
+`
+
+type UpsertTaskParams struct {
+	ID         pgtype.UUID
+	SectionID  pgtype.UUID
+	Title      string
+	ImageUrl   pgtype.Text
+	Difficulty int32
+	Content    []byte
+	Position   int32
+	IsDynamic  bool
+	IsPublic   bool
+}
+
+func (q *Queries) UpsertTask(ctx context.Context, arg UpsertTaskParams) error {
+	_, err := q.db.Exec(ctx, upsertTask,
+		arg.ID,
+		arg.SectionID,
+		arg.Title,
+		arg.ImageUrl,
+		arg.Difficulty,
+		arg.Content,
+		arg.Position,
+		arg.IsDynamic,
+		arg.IsPublic,
+	)
+	return err
+}
+
+const upsertTechnology = `-- name: UpsertTechnology :exec
+INSERT INTO technology (
+  id,
+  title,
+  description,
+  image_url,
+  position
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (id) DO UPDATE
+SET
+  title = $2,
+  description = $3,
+  image_url = $4,
+  position = $5,
+  updated_at = NOW()
+`
+
+type UpsertTechnologyParams struct {
+	ID          pgtype.UUID
+	Title       string
+	Description pgtype.Text
+	ImageUrl    pgtype.Text
+	Position    int32
+}
+
+func (q *Queries) UpsertTechnology(ctx context.Context, arg UpsertTechnologyParams) error {
+	_, err := q.db.Exec(ctx, upsertTechnology,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.ImageUrl,
+		arg.Position,
+	)
+	return err
 }

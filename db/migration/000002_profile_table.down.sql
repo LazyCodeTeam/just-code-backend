@@ -1,1 +1,5 @@
+BEGIN;
+
 DROP TABLE IF EXISTS profile cascade;
+
+COMMIT;

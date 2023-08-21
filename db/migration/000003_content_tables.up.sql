@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE technology (
   id uuid NOT NULL,
   title varchar(1024) NOT NULL,
@@ -44,3 +46,5 @@ CREATE TABLE task (
 );
 
 SELECT manage_updated_at('task');
+
+COMMIT;
