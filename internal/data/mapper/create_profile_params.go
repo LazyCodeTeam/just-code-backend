@@ -13,7 +13,7 @@ func CreateProfileParamsFromModel(
 	return db.CreateProfileParams{
 		ID:        id,
 		Name:      params.Nick,
-		FirstName: util.ToDbString(params.FirstName),
-		LastName:  util.ToDbString(params.LastName),
+		FirstName: util.ToPgString(params.FirstName),
+		LastName:  util.ToPgString(params.LastName),
 	}
 }

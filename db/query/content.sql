@@ -26,8 +26,14 @@ ORDER BY section.position ASC, task.position ASC;
 -- name: GetAllTechnologySections :many
 SELECT * FROM section WHERE technology_id = $1 ORDER BY position ASC;
 
+-- name: GetAllSections :many
+SELECT * FROM section;
+
 -- name: GetAllSectionTasks :many
 SELECT * FROM task WHERE section_id = $1 ORDER BY position ASC;
+
+-- name: GetAllTasks :many
+SELECT * FROM task;
 
 -- name: UpsertTechnology :exec
 INSERT INTO technology (
@@ -46,6 +52,9 @@ SET
   image_url = $4,
   position = $5,
   updated_at = NOW();
+
+-- name: DeleteTechnologyById :exec
+DELETE FROM technology WHERE id = $1;
 
 -- name: UpsertSection :exec
 INSERT INTO section (
@@ -67,16 +76,19 @@ SET
   position = $6,
   updated_at = NOW();
 
+-- name: DeleteSectionById :exec
+DELETE FROM section WHERE id = $1;
+
 -- name: UpsertTask :exec
 INSERT INTO task (
   id,
   section_id,
   title,
+  description,
   image_url,
   difficulty,
   content,
   position,
-  is_dynamic,
   is_public
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9
@@ -85,10 +97,13 @@ ON CONFLICT (id) DO UPDATE
 SET
   section_id = $2,
   title = $3,
-  image_url = $4,
-  difficulty = $5,
-  content = $6,
-  position = $7,
-  is_dynamic = $8,
+  description = $4,
+  image_url = $5,
+  difficulty = $6,
+  content = $7,
+  position = $8,
   is_public = $9,
   updated_at = NOW();
+
+-- name: DeleteTaskById :exec
+DELETE FROM task WHERE id = $1;

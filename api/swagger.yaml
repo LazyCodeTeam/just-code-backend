@@ -44,6 +44,130 @@ definitions:
             - code
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedSection:
+        description: Will be compared with actual state and required changes will be applied
+        properties:
+            description:
+                description: Section description
+                minLength: 1
+                type: string
+                x-go-name: Description
+            id:
+                description: Section id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Section image url
+                minLength: 1
+                type: string
+                x-go-name: ImageUrl
+            name:
+                description: Section name
+                maxLength: 1024
+                minLength: 1
+                type: string
+                x-go-name: Name
+            tasks:
+                description: Expended tasks
+                items:
+                    $ref: '#/definitions/ExpectedTask'
+                minLength: 1
+                type: array
+                x-go-name: ExpectedTasks
+        required:
+            - id
+            - name
+            - tasks
+        title: ExpectedSectionDto - represents desired state of section.
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedTask:
+        description: Will be compared with actual state and required changes will be applied
+        properties:
+            content:
+                $ref: '#/definitions/TaskContent'
+            description:
+                description: Task description
+                minLength: 1
+                type: string
+                x-go-name: Description
+            difficulty:
+                description: Task difficulty
+                format: int64
+                maximum: 10
+                minimum: 1
+                type: integer
+                x-go-name: Difficulty
+            id:
+                description: Task id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Task image url
+                minLength: 1
+                type: string
+                x-go-name: ImageUrl
+            is_dynamic:
+                description: Task is dynamic - content will not be displayed in standard list. It will be only ueed to generate random tasks for users
+                type: boolean
+                x-go-name: IsDynamic
+            is_public:
+                description: Task is public - content will be visible aslo for anonymous users
+                type: boolean
+                x-go-name: IsPublic
+            title:
+                description: Task title
+                maxLength: 1024
+                minLength: 1
+                type: string
+                x-go-name: Title
+        required:
+            - id
+            - title
+            - difficulty
+            - is_public
+            - is_dynamic
+            - content
+        title: ExpectedTaskDto - represents desired state of task in section.
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedTechnology:
+        description: Will be compared with actual state and required changes will be applied
+        properties:
+            description:
+                description: Technology description
+                minLength: 1
+                type: string
+                x-go-name: Description
+            id:
+                description: Technology id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Technology image url
+                minLength: 1
+                type: string
+                x-go-name: ImageUrl
+            name:
+                description: Technology name
+                maxLength: 1024
+                minLength: 1
+                type: string
+                x-go-name: Name
+            sections:
+                description: Expended sections
+                items:
+                    $ref: '#/definitions/ExpectedSection'
+                minLength: 1
+                type: array
+                x-go-name: ExpectedSections
+        required:
+            - id
+            - name
+            - sections
+        title: ExpectedTechnologyDto - represents desired state of technology.
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     Profile:
         description: ProfileDto
         properties:
@@ -82,6 +206,10 @@ definitions:
             - id
             - nickname
             - created_at
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    TaskContent:
+        description: TaskContentDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:

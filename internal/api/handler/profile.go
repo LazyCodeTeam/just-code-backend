@@ -130,7 +130,7 @@ func (h *profileHandler) handleGetCurrent(writer http.ResponseWriter, request *h
 		util.WriteError(writer, err)
 		return
 	}
-	util.WriteResponseJson(writer, dto.ProfileFromModel(profile))
+	util.WriteResponseJson(writer, dto.ProfileFromDomain(profile))
 }
 
 func (h *profileHandler) handlePutCurrent(writer http.ResponseWriter, request *http.Request) {
@@ -140,7 +140,7 @@ func (h *profileHandler) handlePutCurrent(writer http.ResponseWriter, request *h
 
 		return
 	}
-	err = h.updateCurrentprofile.Invoke(request.Context(), dto.CreateProfileParamsToModel(body))
+	err = h.updateCurrentprofile.Invoke(request.Context(), dto.CreateProfileParamsToDomain(body))
 	if err != nil {
 		util.WriteError(writer, err)
 

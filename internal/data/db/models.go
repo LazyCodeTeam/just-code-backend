@@ -30,17 +30,17 @@ type Section struct {
 }
 
 type Task struct {
-	ID         pgtype.UUID
-	SectionID  pgtype.UUID
-	Title      string
-	ImageUrl   pgtype.Text
-	Difficulty int32
-	Content    []byte
-	Position   int32
-	IsDynamic  bool
-	IsPublic   bool
-	UpdatedAt  pgtype.Timestamptz
-	CreatedAt  pgtype.Timestamptz
+	ID          pgtype.UUID
+	SectionID   pgtype.UUID
+	Title       string
+	Description pgtype.Text
+	ImageUrl    pgtype.Text
+	Difficulty  int32
+	Content     []byte
+	Position    pgtype.Int4
+	IsPublic    bool
+	UpdatedAt   pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
 }
 
 type Technology struct {

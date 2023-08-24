@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"log/slog"
 
 	"cloud.google.com/go/storage"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,26 +16,34 @@ import (
 
 func Providers() []interface{} {
 	return []interface{}{
-		NewDB,
-		NewStoregeClient,
-		NewBucketHandle,
+		newDB,
+		newStoregeCliente,
+		newBucketHandle,
 		fx.Annotate(adapter.NewPgProfileRepository, fx.As(new(port.ProfileRepository))),
 		fx.Annotate(adapter.NewBucketFileRepository, fx.As(new(port.FileRepository))),
+		fx.Annotate(adapter.NewPgContentRepository, fx.As(new(port.ContentRepository))),
+		fx.Annotate(adapter.NewPgTransactionFactory, fx.As(new(port.TransactionFactory))),
 	}
 }
 
-func NewDB(config *config.Config) (*db.Queries, error) {
+func newConnectionPool(config *config.Config) (*pgxpool.Pool, error) {
 	dbpool, err := pgxpool.New(context.Background(), config.PgUrl)
 	if err != nil {
+		slog.Error("Failed to connect to database", "err", err)
 		return nil, err
 	}
-	return db.New(dbpool), nil
+
+	return dbpool, nil
 }
 
-func NewStoregeClient() (*storage.Client, error) {
+func newDB(config *config.Config, pool *pgxpool.Pool) (*db.Queries, error) {
+	return db.New(pool), nil
+}
+
+func newStoregeCliente() (*storage.Client, error) {
 	return storage.NewClient(context.Background())
 }
 
-func NewBucketHandle(config *config.Config, client *storage.Client) *storage.BucketHandle {
+func newBucketHandle(config *config.Config, client *storage.Client) *storage.BucketHandle {
 	return client.Bucket(config.BucketName)
 }

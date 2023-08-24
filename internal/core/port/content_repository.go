@@ -1,3 +1,27 @@
 package port
 
-type ContentRepository interface{}
+import (
+	"context"
+
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+)
+
+type ContentRepository interface {
+	UpsertTask(ctx context.Context, task model.Task) error
+
+	UpsertSection(ctx context.Context, section model.Section) error
+
+	UpsertTechnology(ctx context.Context, technology model.Technology) error
+
+	GetAllTasks(ctx context.Context) ([]model.Task, error)
+
+	GetAllSections(ctx context.Context) ([]model.Section, error)
+
+	GetAllTechnologies(ctx context.Context) ([]model.Technology, error)
+
+	DeleteTaskById(ctx context.Context, id string) error
+
+	DeleteSectionById(ctx context.Context, id string) error
+
+	DeleteTechnologyById(ctx context.Context, id string) error
+}

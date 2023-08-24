@@ -43,7 +43,7 @@ type Profile struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func ProfileFromModel(model model.Profile) Profile {
+func ProfileFromDomain(model model.Profile) Profile {
 	return Profile{
 		Id:        model.Id,
 		Nickname:  model.Nick,
