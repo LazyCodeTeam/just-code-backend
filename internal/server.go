@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"log/slog"
 	"net"
 	"net/http"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	openapi "github.com/go-openapi/runtime/middleware"
 	"go.uber.org/fx"
-	"log/slog"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/handler"
@@ -58,6 +58,7 @@ func startListener(lc fx.Lifecycle, server *http.Server) {
 
 func newMux(
 	handlers []handler.Handler,
+	cmsHandler handler.AdminContentHandler,
 	healthHandler *handler.HealthHandler,
 	authTokenValidator *appMiddleware.AuthTokenValidator,
 ) *chi.Mux {
@@ -87,6 +88,11 @@ func newMux(
 	mux.Method(http.MethodGet, "/api/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	healthHandler.Register(mux)
+
+	mux.Route("/admin/api", func(router chi.Router) {
+		router.Use(authTokenValidator.Handle)
+		cmsHandler.Register(router)
+	})
 
 	mux.Route("/api", func(router chi.Router) {
 		router.Use(authTokenValidator.Handle)

@@ -24,7 +24,7 @@ type Error struct {
 	StatusCode int `json:"-"`
 }
 
-func ErrorFromModel(err failure.Failure) Error {
+func ErrorFromDomain(err failure.Failure) Error {
 	statusCode := mapTypeToStatusCode(err)
 	if statusCode == 0 {
 		statusCode = 500

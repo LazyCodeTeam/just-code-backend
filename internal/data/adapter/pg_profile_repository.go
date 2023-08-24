@@ -2,10 +2,10 @@ package adapter
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"log/slog"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
@@ -74,7 +74,7 @@ func (r *PgProfileRepository) SetProfileAvatar(
 ) error {
 	err := r.queries.UpdateProfileAvatar(ctx, db.UpdateProfileAvatarParams{
 		ID:        profileId,
-		AvatarUrl: util.ToDbString(url),
+		AvatarUrl: util.ToPgString(url),
 	})
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to update profile avatar", "err", err)

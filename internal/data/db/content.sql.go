@@ -11,8 +11,35 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const deleteSectionById = `-- name: DeleteSectionById :exec
+DELETE FROM section WHERE id = $1
+`
+
+func (q *Queries) DeleteSectionById(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteSectionById, id)
+	return err
+}
+
+const deleteTaskById = `-- name: DeleteTaskById :exec
+DELETE FROM task WHERE id = $1
+`
+
+func (q *Queries) DeleteTaskById(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteTaskById, id)
+	return err
+}
+
+const deleteTechnologyById = `-- name: DeleteTechnologyById :exec
+DELETE FROM technology WHERE id = $1
+`
+
+func (q *Queries) DeleteTechnologyById(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteTechnologyById, id)
+	return err
+}
+
 const getAllSectionTasks = `-- name: GetAllSectionTasks :many
-SELECT id, section_id, title, image_url, difficulty, content, position, is_dynamic, is_public, updated_at, created_at FROM task WHERE section_id = $1 ORDER BY position ASC
+SELECT id, section_id, title, description, image_url, difficulty, content, position, is_public, updated_at, created_at FROM task WHERE section_id = $1 ORDER BY position ASC
 `
 
 func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID) ([]Task, error) {
@@ -28,11 +55,80 @@ func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID)
 			&i.ID,
 			&i.SectionID,
 			&i.Title,
+			&i.Description,
 			&i.ImageUrl,
 			&i.Difficulty,
 			&i.Content,
 			&i.Position,
-			&i.IsDynamic,
+			&i.IsPublic,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllSections = `-- name: GetAllSections :many
+SELECT id, technology_id, title, description, image_url, position, updated_at, created_at FROM section
+`
+
+func (q *Queries) GetAllSections(ctx context.Context) ([]Section, error) {
+	rows, err := q.db.Query(ctx, getAllSections)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Section
+	for rows.Next() {
+		var i Section
+		if err := rows.Scan(
+			&i.ID,
+			&i.TechnologyID,
+			&i.Title,
+			&i.Description,
+			&i.ImageUrl,
+			&i.Position,
+			&i.UpdatedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllTasks = `-- name: GetAllTasks :many
+SELECT id, section_id, title, description, image_url, difficulty, content, position, is_public, updated_at, created_at FROM task
+`
+
+func (q *Queries) GetAllTasks(ctx context.Context) ([]Task, error) {
+	rows, err := q.db.Query(ctx, getAllTasks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.SectionID,
+			&i.Title,
+			&i.Description,
+			&i.ImageUrl,
+			&i.Difficulty,
+			&i.Content,
+			&i.Position,
 			&i.IsPublic,
 			&i.UpdatedAt,
 			&i.CreatedAt,
@@ -279,11 +375,11 @@ INSERT INTO task (
   id,
   section_id,
   title,
+  description,
   image_url,
   difficulty,
   content,
   position,
-  is_dynamic,
   is_public
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9
@@ -292,25 +388,25 @@ ON CONFLICT (id) DO UPDATE
 SET
   section_id = $2,
   title = $3,
-  image_url = $4,
-  difficulty = $5,
-  content = $6,
-  position = $7,
-  is_dynamic = $8,
+  description = $4,
+  image_url = $5,
+  difficulty = $6,
+  content = $7,
+  position = $8,
   is_public = $9,
   updated_at = NOW()
 `
 
 type UpsertTaskParams struct {
-	ID         pgtype.UUID
-	SectionID  pgtype.UUID
-	Title      string
-	ImageUrl   pgtype.Text
-	Difficulty int32
-	Content    []byte
-	Position   int32
-	IsDynamic  bool
-	IsPublic   bool
+	ID          pgtype.UUID
+	SectionID   pgtype.UUID
+	Title       string
+	Description pgtype.Text
+	ImageUrl    pgtype.Text
+	Difficulty  int32
+	Content     []byte
+	Position    pgtype.Int4
+	IsPublic    bool
 }
 
 func (q *Queries) UpsertTask(ctx context.Context, arg UpsertTaskParams) error {
@@ -318,11 +414,11 @@ func (q *Queries) UpsertTask(ctx context.Context, arg UpsertTaskParams) error {
 		arg.ID,
 		arg.SectionID,
 		arg.Title,
+		arg.Description,
 		arg.ImageUrl,
 		arg.Difficulty,
 		arg.Content,
 		arg.Position,
-		arg.IsDynamic,
 		arg.IsPublic,
 	)
 	return err

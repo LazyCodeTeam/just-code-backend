@@ -32,8 +32,9 @@ func (f *PgTransactionFactory) Begin(ctx context.Context) (port.Transaction, err
 }
 
 type PgTransaction struct {
-	tx      pgx.Tx
-	queries *db.Queries
+	tx       pgx.Tx
+	queries  *db.Queries
+	finished bool
 }
 
 func (t *PgTransaction) ContentRepository(ctx context.Context) port.ContentRepository {
@@ -41,10 +42,17 @@ func (t *PgTransaction) ContentRepository(ctx context.Context) port.ContentRepos
 }
 
 func (t *PgTransaction) Commit(ctx context.Context) error {
+	if t.finished {
+		slog.WarnContext(ctx, "Failed to commit transaction: transaction already finished")
+		return nil
+	}
+	defer func() {
+		t.finished = true
+	}()
+
 	err := t.tx.Commit(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to commit transaction: %v", "err", err)
-
 		return err
 	}
 
@@ -52,10 +60,17 @@ func (t *PgTransaction) Commit(ctx context.Context) error {
 }
 
 func (t *PgTransaction) Rollback(ctx context.Context) error {
+	if t.finished {
+		slog.InfoContext(ctx, "Failed to rollback transaction: transaction already finished")
+		return nil
+	}
+	defer func() {
+		t.finished = true
+	}()
+
 	err := t.tx.Rollback(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to rollback transaction: %v", "err", err)
-
 		return err
 	}
 

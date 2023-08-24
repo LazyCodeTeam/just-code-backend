@@ -23,7 +23,7 @@ type CreateProfileParams struct {
 	LastName *string `json:"last_name"  validate:"omitempty,min=2,max=64"`
 }
 
-func CreateProfileParamsToModel(dto CreateProfileParams) model.CreateProfileParams {
+func CreateProfileParamsToDomain(dto CreateProfileParams) model.CreateProfileParams {
 	return model.CreateProfileParams{
 		Nick:      dto.Nickname,
 		FirstName: dto.FirstName,

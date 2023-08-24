@@ -17,7 +17,7 @@ func WriteError(writer http.ResponseWriter, err error) {
 		errorModel = failure.New(failure.FailureTypeUnknown)
 	}
 
-	dto := dto.ErrorFromModel(*errorModel)
+	dto := dto.ErrorFromDomain(*errorModel)
 	WriteResponseJson(writer, dto, dto.StatusCode)
 }
 
