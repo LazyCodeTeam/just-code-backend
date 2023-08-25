@@ -58,7 +58,7 @@ func startListener(lc fx.Lifecycle, server *http.Server) {
 
 func newMux(
 	handlers []handler.Handler,
-	cmsHandler handler.AdminContentHandler,
+	cmsHandler *handler.AdminContentHandler,
 	healthHandler *handler.HealthHandler,
 	authTokenValidator *appMiddleware.AuthTokenValidator,
 ) *chi.Mux {

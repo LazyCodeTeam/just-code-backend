@@ -16,6 +16,7 @@ import (
 
 func Providers() []interface{} {
 	return []interface{}{
+		newConnectionPool,
 		newDB,
 		newStoregeCliente,
 		newBucketHandle,
