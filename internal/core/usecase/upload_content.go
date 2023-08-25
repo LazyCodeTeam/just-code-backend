@@ -27,10 +27,10 @@ func (u *UploadContent) Invoke(ctx context.Context, params []model.ExpectedTechn
 
 	repo := transaction.ContentRepository(ctx)
 	technologies, sections, tasks, err := getCurrentContent(ctx, repo)
-	expectedTechnologies, expectedSections, expectedTasks := getExpectedContent(params)
 	if err != nil {
 		return err
 	}
+	expectedTechnologies, expectedSections, expectedTasks := getExpectedContent(params)
 	err = alignStateToExpected(
 		ctx,
 		expectedTasks,
