@@ -8,6 +8,8 @@ import (
 
 // ErrorDto
 //
+// Represents error.
+//
 // swagger:model
 type Error struct {
 	// Error code - for programmatic error handling

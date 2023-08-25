@@ -3,7 +3,7 @@ consumes:
     - application/json
 definitions:
     CreateProfileParams:
-        description: CreateProfileParamsDto
+        description: Represents params for creating profile.
         properties:
             first_name:
                 description: User first name
@@ -22,10 +22,11 @@ definitions:
                 x-go-name: Nickname
         required:
             - nickname
+        title: CreateProfileParamsDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     Error:
-        description: ErrorDto
+        description: Represents error.
         properties:
             args:
                 additionalProperties: {}
@@ -42,10 +43,13 @@ definitions:
                 x-go-name: Code
         required:
             - code
+        title: ErrorDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedSection:
-        description: Will be compared with actual state and required changes will be applied
+        description: |-
+            Represents desired state of section.
+            Will be compared with actual state and required changes will be applied
         properties:
             description:
                 description: Section description
@@ -78,11 +82,13 @@ definitions:
             - id
             - name
             - tasks
-        title: ExpectedSectionDto - represents desired state of section.
+        title: ExpectedSectionDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedTask:
-        description: Will be compared with actual state and required changes will be applied
+        description: |-
+            Represents desired state of task in section.
+            Will be compared with actual state and required changes will be applied
         properties:
             content:
                 $ref: '#/definitions/TaskContent'
@@ -128,11 +134,13 @@ definitions:
             - is_public
             - is_dynamic
             - content
-        title: ExpectedTaskDto - represents desired state of task in section.
+        title: ExpectedTaskDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedTechnology:
-        description: Will be compared with actual state and required changes will be applied
+        description: |-
+            Uepresents desired state of technology.
+            Will be compared with actual state and required changes will be applied
         properties:
             description:
                 description: Technology description
@@ -165,11 +173,11 @@ definitions:
             - id
             - name
             - sections
-        title: ExpectedTechnologyDto - represents desired state of technology.
+        title: ExpectedTechnologyDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     Profile:
-        description: ProfileDto
+        description: Represents user profile.
         properties:
             avatar_url:
                 description: User avatar url
@@ -206,10 +214,12 @@ definitions:
             - id
             - nickname
             - created_at
+        title: ProfileDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     TaskContent:
-        description: TaskContentDto
+        description: Represents task content.
+        title: TaskContentDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:
@@ -221,6 +231,34 @@ info:
     title: JustCode API
     version: 0.0.1
 paths:
+    /admin/api/v1/content:
+        get:
+            description: Takes expected state of content and updates state of content in database to match expected state.
+            operationId: contentPut
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    items:
+                        $ref: '#/definitions/ExpectedTechnology'
+                    type: array
+                - description: If true, then no changes will be committed to database.
+                  in: query
+                  name: dry_run
+                  type: boolean
+                  x-go-name: DryRun
+            responses:
+                "204":
+                    $ref: '#/responses/noContentResponse'
+                "400":
+                    $ref: '#/responses/errorResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Upload content
+            tags:
+                - admin
     /api/health:
         get:
             description: This will check if the service is up and running.
@@ -251,7 +289,7 @@ paths:
             description: |-
                 Creates new profile for current user or updates existing one. If profile already exists all fields will be updated.
                 Nickname must be unique, otherwise 409 error will be returned.
-            operationId: profilePutCurrentParams
+            operationId: profilePutCurrent
             parameters:
                 - in: body
                   name: Body
@@ -287,7 +325,7 @@ paths:
             description: |-
                 Image must be in jpeg or png format. Max size is 2MB.
                 Should be send as binary data in request body.
-            operationId: profilePutCurrentAvatarParams
+            operationId: profilePutCurrentAvatar
             parameters:
                 - in: body
                   name: Body

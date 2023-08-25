@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"reflect"
+	"slices"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
@@ -18,7 +19,11 @@ func NewUploadContent(transactionFactory port.TransactionFactory) *UploadContent
 	}
 }
 
-func (u *UploadContent) Invoke(ctx context.Context, params []model.ExpectedTechnology) error {
+func (u *UploadContent) Invoke(
+	ctx context.Context,
+	params []model.ExpectedTechnology,
+	dryRun bool,
+) error {
 	transaction, err := u.transactionFactory.Begin(ctx)
 	if err != nil {
 		return err
@@ -63,6 +68,10 @@ func (u *UploadContent) Invoke(ctx context.Context, params []model.ExpectedTechn
 	)
 	if err != nil {
 		return err
+	}
+
+	if dryRun {
+		return nil
 	}
 
 	err = transaction.Commit(ctx)
@@ -112,9 +121,10 @@ func getExpectedContent(
 
 	for _, expectedTechnology := range expectedTechnologies {
 		technologies = append(technologies, expectedTechnology.Technology)
-
+		slices.Grow(sections, len(expectedTechnology.ExpectedSections))
 		for _, expectedSection := range expectedTechnology.ExpectedSections {
 			sections = append(sections, expectedSection.Section)
+			slices.Grow(tasks, len(expectedSection.ExpectedTasks))
 
 			for _, expectedTask := range expectedSection.ExpectedTasks {
 				tasks = append(tasks, expectedTask)

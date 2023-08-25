@@ -8,6 +8,8 @@ import (
 
 // ProfileDto
 //
+// Represents user profile.
+//
 // swagger:model
 type Profile struct {
 	// User id

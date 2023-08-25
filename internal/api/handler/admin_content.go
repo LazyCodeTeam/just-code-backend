@@ -11,6 +11,18 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
 )
 
+const dryRunQueryParam = "dry_run"
+
+// swagger:parameters contentPut
+type uploadContentParams struct {
+	// in: body
+	Body []dto.ExpectedTechnology
+	// If true, then no changes will be committed to database.
+	//
+	// in: query
+	DryRun bool `json:"dry_run"`
+}
+
 type AdminContentHandler struct {
 	validate      *validator.Validate
 	uploadContent *usecase.UploadContent
@@ -28,27 +40,35 @@ func NewAdminContentHandler(
 
 func (h *AdminContentHandler) Register(router chi.Router) {
 	router.Route("/v1/content", func(router chi.Router) {
-		router.Put("/", h.handlePutUploadTasks)
-		router.Put("/dry-run", h.handlePutUploadTasksDryRun)
+		// swagger:route GET /admin/api/v1/content admin contentPut
+		//
+		// Upload content
+		//
+		// Takes expected state of content and updates state of content in database to match expected state.
+		//
+		// Responses:
+		//   204: noContentResponse
+		//   400: errorResponse
+		//   401: errorResponse
+		//   500: errorResponse
+		router.Put("/", h.handlePutUploadContent)
 	})
 }
 
-func (h *AdminContentHandler) handlePutUploadTasks(w http.ResponseWriter, r *http.Request) {
+func (h *AdminContentHandler) handlePutUploadContent(w http.ResponseWriter, r *http.Request) {
 	body, err := util.DeserializeAndValidateBody[[]dto.ExpectedTechnology](r, h.validate)
+	dryRun := r.URL.Query().Get(dryRunQueryParam) == "true"
 	if err != nil {
 		util.WriteError(w, err)
 
 		return
 	}
 	expected := dto.ExpectedTechnologiesSliceToDomain(body)
-	err = h.uploadContent.Invoke(r.Context(), expected)
+	err = h.uploadContent.Invoke(r.Context(), expected, dryRun)
 	if err != nil {
 		util.WriteError(w, err)
 
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func (h *AdminContentHandler) handlePutUploadTasksDryRun(w http.ResponseWriter, r *http.Request) {
 }
