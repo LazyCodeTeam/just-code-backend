@@ -2,7 +2,9 @@ package dto
 
 import "github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 
-// ExpectedTechnologyDto - represents desired state of technology.
+// ExpectedTechnologyDto
+//
+// Uepresents desired state of technology.
 // Will be compared with actual state and required changes will be applied
 //
 // swagger:model
@@ -35,7 +37,9 @@ type ExpectedTechnology struct {
 	ExpectedSections []ExpectedSection `json:"sections"`
 }
 
-// ExpectedSectionDto - represents desired state of section.
+// ExpectedSectionDto
+//
+// Represents desired state of section.
 // Will be compared with actual state and required changes will be applied
 //
 // swagger:model
@@ -68,7 +72,9 @@ type ExpectedSection struct {
 	ExpectedTasks []ExpectedTask `json:"tasks"`
 }
 
-// ExpectedTaskDto - represents desired state of task in section.
+// ExpectedTaskDto
+//
+// Represents desired state of task in section.
 // Will be compared with actual state and required changes will be applied
 //
 // swagger:model
@@ -115,6 +121,8 @@ type ExpectedTask struct {
 }
 
 // TaskContentDto
+//
+// Represents task content.
 //
 // swagger:model
 type TaskContent struct{}

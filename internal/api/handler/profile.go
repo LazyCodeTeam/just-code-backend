@@ -20,13 +20,13 @@ type profileGetCurrentResponse struct {
 	Body dto.Profile
 }
 
-// swagger:parameters profilePutCurrentAvatarParams
+// swagger:parameters profilePutCurrentAvatar
 type profilePutCurrentAvatarParams struct {
 	// in: body
 	Body []byte
 }
 
-// swagger:parameters profilePutCurrentParams
+// swagger:parameters profilePutCurrent
 type profilePutCurrentParams struct {
 	// in: body
 	Body dto.CreateProfileParams
@@ -71,7 +71,7 @@ func (h *profileHandler) Register(router chi.Router) {
 		//	404: errorResponse
 		//	500: errorResponse
 		router.Get("/current", h.handleGetCurrent)
-		// swagger:route PUT /api/v1/profile/current profile profilePutCurrentParams
+		// swagger:route PUT /api/v1/profile/current profile profilePutCurrent
 		//
 		// # Update current profile
 		//
@@ -99,7 +99,7 @@ func (h *profileHandler) Register(router chi.Router) {
 		//	500: errorResponse
 		router.Delete("/current/avatar", h.handleDeleteCurrentAvatar)
 
-		// swagger:route PUT /api/v1/profile/current/avatar profile profilePutCurrentAvatarParams
+		// swagger:route PUT /api/v1/profile/current/avatar profile profilePutCurrentAvatar
 		//
 		// # Upload current profile avatar.
 		//

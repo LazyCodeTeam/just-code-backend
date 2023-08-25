@@ -4,6 +4,8 @@ import "github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 
 // CreateProfileParamsDto
 //
+// Represents params for creating profile.
+//
 // swagger:model
 type CreateProfileParams struct {
 	// User nickname
