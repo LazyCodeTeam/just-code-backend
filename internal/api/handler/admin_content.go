@@ -40,14 +40,14 @@ func NewAdminContentHandler(
 
 func (h *AdminContentHandler) Register(router chi.Router) {
 	router.Route("/v1/content", func(router chi.Router) {
-		// swagger:route GET /admin/api/v1/content admin contentPut
+		// swagger:route PUT /admin/api/v1/content admin contentPut
 		//
 		// Upload content
 		//
 		// Takes expected state of content and updates state of content in database to match expected state.
 		//
 		// Responses:
-		//   204: noContentResponse
+		//   204: emptyResponse
 		//   400: errorResponse
 		//   401: errorResponse
 		//   500: errorResponse
