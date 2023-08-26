@@ -77,7 +77,7 @@ definitions:
                     $ref: '#/definitions/ExpectedTask'
                 minLength: 1
                 type: array
-                x-go-name: ExpectedTasks
+                x-go-name: Tasks
         required:
             - id
             - name
@@ -91,7 +91,7 @@ definitions:
             Will be compared with actual state and required changes will be applied
         properties:
             content:
-                $ref: '#/definitions/TaskContent'
+                $ref: '#/definitions/ExpectedTaskContent'
             description:
                 description: Task description
                 minLength: 1
@@ -121,20 +121,94 @@ definitions:
                 description: Task is public - content will be visible aslo for anonymous users
                 type: boolean
                 x-go-name: IsPublic
-            title:
+            name:
                 description: Task title
                 maxLength: 1024
                 minLength: 1
                 type: string
-                x-go-name: Title
+                x-go-name: Name
         required:
             - id
-            - title
+            - name
             - difficulty
             - is_public
             - is_dynamic
             - content
         title: ExpectedTaskDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedTaskContent:
+        description: Represents task content.
+        properties:
+            correct_option:
+                description: |-
+                    Index of correct answer
+
+                    Required if kind is SINGLE_SELECTION.
+                format: int64
+                maximum: 63
+                minimum: 0
+                type: integer
+                x-go-name: CorrectOption
+            correct_options:
+                description: |-
+                    Indexes of correct answers
+
+                    Required if kind is MULTI_SELECTION.
+                items:
+                    format: int64
+                    type: integer
+                maxLength: 64
+                minLength: 1
+                type: array
+                x-go-name: CorrectOptions
+            description:
+                description: Task description
+                type: string
+                x-go-name: Description
+            hints:
+                description: Task hints
+                items:
+                    $ref: '#/definitions/ExpectedTaskHint'
+                maxLength: 128
+                type: array
+                x-go-name: Hints
+            kind:
+                $ref: '#/definitions/TaskContentType'
+            options:
+                description: |-
+                    Possible answers
+
+                    Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
+                items:
+                    $ref: '#/definitions/ExpectedTaskOption'
+                maxLength: 64
+                minLength: 2
+                type: array
+                x-go-name: Options
+        required:
+            - description
+        title: TaskContentDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedTaskHint:
+        properties:
+            content:
+                description: Hint content
+                type: string
+                x-go-name: Content
+        required:
+            - content
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    ExpectedTaskOption:
+        properties:
+            content:
+                description: Option content
+                type: string
+                x-go-name: Content
+        required:
+            - content
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedTechnology:
@@ -217,10 +291,8 @@ definitions:
         title: ProfileDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
-    TaskContent:
-        description: Represents task content.
-        title: TaskContentDto
-        type: object
+    TaskContentType:
+        type: string
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:
     contact:
