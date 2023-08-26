@@ -38,11 +38,11 @@ func (u *UploadContent) Invoke(
 	expectedTechnologies, expectedSections, expectedTasks := getExpectedContent(params)
 	err = alignStateToExpected(
 		ctx,
-		expectedTasks,
-		tasks,
-		repo.UpsertTask,
-		repo.DeleteTaskById,
-		func(task model.Task) string { return task.Id },
+		expectedTechnologies,
+		technologies,
+		repo.UpsertTechnology,
+		repo.DeleteTechnologyById,
+		func(technology model.Technology) string { return technology.Id },
 	)
 	if err != nil {
 		return err
@@ -60,11 +60,11 @@ func (u *UploadContent) Invoke(
 	}
 	err = alignStateToExpected(
 		ctx,
-		expectedTechnologies,
-		technologies,
-		repo.UpsertTechnology,
-		repo.DeleteTechnologyById,
-		func(technology model.Technology) string { return technology.Id },
+		expectedTasks,
+		tasks,
+		repo.UpsertTask,
+		repo.DeleteTaskById,
+		func(task model.Task) string { return task.Id },
 	)
 	if err != nil {
 		return err
@@ -94,6 +94,7 @@ func alignStateToExpected[T any](
 		id := idResolver(expectedItem)
 		actualItem, ok := actual[id]
 		if ok && reflect.DeepEqual(expectedItem, actualItem) {
+			delete(actual, id)
 			continue
 		}
 		err := upsertItem(ctx, expectedItem)
@@ -115,7 +116,7 @@ func alignStateToExpected[T any](
 func getExpectedContent(
 	expectedTechnologies []model.ExpectedTechnology,
 ) ([]model.Technology, []model.Section, []model.Task) {
-	technologies := make([]model.Technology, len(expectedTechnologies))
+	technologies := make([]model.Technology, 0, len(expectedTechnologies))
 	sections := make([]model.Section, 0)
 	tasks := make([]model.Task, 0)
 
@@ -164,7 +165,7 @@ func getAllTechnologiesAsMap(
 	}
 	technologiesMap := make(map[string]model.Technology)
 	for _, technology := range technologies {
-		technologiesMap[technology.Title] = technology
+		technologiesMap[technology.Id] = technology
 	}
 
 	return technologiesMap, nil
@@ -180,7 +181,7 @@ func getAllSectionsAsMap(
 	}
 	sectionsMap := make(map[string]model.Section)
 	for _, section := range sections {
-		sectionsMap[section.Title] = section
+		sectionsMap[section.Id] = section
 	}
 
 	return sectionsMap, nil
@@ -196,7 +197,7 @@ func getAllTasksAsMap(
 	}
 	tasksMap := make(map[string]model.Task)
 	for _, task := range tasks {
-		tasksMap[task.Title] = task
+		tasksMap[task.Id] = task
 	}
 
 	return tasksMap, nil

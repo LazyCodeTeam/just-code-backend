@@ -106,7 +106,7 @@ func (r *PgContentRepository) GetAllTechnologies(ctx context.Context) ([]model.T
 }
 
 func (r *PgContentRepository) DeleteTaskById(ctx context.Context, id string) error {
-	err := r.queries.DeleteTaskById(ctx, util.EncodeUUID(id))
+	err := r.queries.DeleteTaskById(ctx, util.ToPgUUID(id))
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to delete task by id", "err", err)
 		return err
@@ -116,7 +116,7 @@ func (r *PgContentRepository) DeleteTaskById(ctx context.Context, id string) err
 }
 
 func (r *PgContentRepository) DeleteSectionById(ctx context.Context, id string) error {
-	err := r.queries.DeleteSectionById(ctx, util.EncodeUUID(id))
+	err := r.queries.DeleteSectionById(ctx, util.ToPgUUID(id))
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to delete section by id", "err", err)
 		return err
@@ -126,7 +126,7 @@ func (r *PgContentRepository) DeleteSectionById(ctx context.Context, id string) 
 }
 
 func (r *PgContentRepository) DeleteTechnologyById(ctx context.Context, id string) error {
-	err := r.queries.DeleteTechnologyById(ctx, util.EncodeUUID(id))
+	err := r.queries.DeleteTechnologyById(ctx, util.ToPgUUID(id))
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to delete technology by id", "err", err)
 		return err

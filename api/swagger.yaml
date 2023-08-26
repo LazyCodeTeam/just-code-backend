@@ -232,7 +232,7 @@ info:
     version: 0.0.1
 paths:
     /admin/api/v1/content:
-        get:
+        put:
             description: Takes expected state of content and updates state of content in database to match expected state.
             operationId: contentPut
             parameters:
@@ -249,7 +249,7 @@ paths:
                   x-go-name: DryRun
             responses:
                 "204":
-                    $ref: '#/responses/noContentResponse'
+                    $ref: '#/responses/emptyResponse'
                 "400":
                     $ref: '#/responses/errorResponse'
                 "401":

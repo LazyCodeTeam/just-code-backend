@@ -43,6 +43,8 @@ func mapTypeToStatusCode(err failure.Failure) int {
 	switch err.Type {
 	case failure.FailureTypeUnknown:
 		return http.StatusInternalServerError
+	case failure.FailureTypeInvalidInput:
+		return http.StatusBadRequest
 	case failure.FailureTypeUnauthorized:
 		return http.StatusUnauthorized
 	case failure.FailureTypeNotFound:
