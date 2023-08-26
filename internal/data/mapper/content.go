@@ -11,7 +11,7 @@ import (
 
 func TechnologyToDomain(technology db.Technology) model.Technology {
 	return model.Technology{
-		Id:          util.DecodeUUID(technology.ID),
+		Id:          util.FromPgUUID(technology.ID),
 		Title:       technology.Title,
 		Description: util.FromPgString(technology.Description),
 		ImageUrl:    util.FromPgString(technology.ImageUrl),
@@ -21,11 +21,12 @@ func TechnologyToDomain(technology db.Technology) model.Technology {
 
 func SectionToDomain(section db.Section) model.Section {
 	return model.Section{
-		Id:          util.DecodeUUID(section.ID),
-		Title:       section.Title,
-		Description: util.FromPgString(section.Description),
-		ImageUrl:    util.FromPgString(section.ImageUrl),
-		Position:    int(section.Position),
+		Id:           util.FromPgUUID(section.ID),
+		TechnologyId: util.FromPgUUID(section.TechnologyID),
+		Title:        section.Title,
+		Description:  util.FromPgString(section.Description),
+		ImageUrl:     util.FromPgString(section.ImageUrl),
+		Position:     int(section.Position),
 	}
 }
 
@@ -38,7 +39,8 @@ func TaskToDomain(task db.Task) (model.Task, error) {
 	}
 
 	return model.Task{
-		Id:          util.DecodeUUID(task.ID),
+		Id:          util.FromPgUUID(task.ID),
+		SectionId:   util.FromPgUUID(task.SectionID),
 		Title:       task.Title,
 		Description: util.FromPgString(task.Description),
 		Position:    util.FromPgInt(task.Position),
@@ -51,7 +53,7 @@ func TaskToDomain(task db.Task) (model.Task, error) {
 
 func UpsertTechnologyParamsFromDomain(technology model.Technology) db.UpsertTechnologyParams {
 	return db.UpsertTechnologyParams{
-		ID:          util.EncodeUUID(technology.Id),
+		ID:          util.ToPgUUID(technology.Id),
 		Title:       technology.Title,
 		Description: util.ToPgString(technology.Description),
 		ImageUrl:    util.ToPgString(technology.ImageUrl),
@@ -61,8 +63,8 @@ func UpsertTechnologyParamsFromDomain(technology model.Technology) db.UpsertTech
 
 func UpsertSectionParamsFromDomain(section model.Section) db.UpsertSectionParams {
 	return db.UpsertSectionParams{
-		ID:           util.EncodeUUID(section.Id),
-		TechnologyID: util.EncodeUUID(section.TechnologyId),
+		ID:           util.ToPgUUID(section.Id),
+		TechnologyID: util.ToPgUUID(section.TechnologyId),
 		Title:        section.Title,
 		Description:  util.ToPgString(section.Description),
 		ImageUrl:     util.ToPgString(section.ImageUrl),
@@ -77,8 +79,8 @@ func UpsertTaskParamsFromDomain(task model.Task) (db.UpsertTaskParams, error) {
 	}
 
 	return db.UpsertTaskParams{
-		ID:          util.EncodeUUID(task.Id),
-		SectionID:   util.EncodeUUID(task.SectionId),
+		ID:          util.ToPgUUID(task.Id),
+		SectionID:   util.ToPgUUID(task.SectionId),
 		Title:       task.Title,
 		Description: util.ToPgString(task.Description),
 		Position:    util.ToPgInt4(task.Position),

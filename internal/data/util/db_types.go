@@ -1,7 +1,9 @@
 package util
 
 import (
+	"encoding/hex"
 	"fmt"
+	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -38,15 +40,21 @@ func ToPgInt4(value *int) pgtype.Int4 {
 	return pgtype.Int4{Int32: int32(*value), Valid: true}
 }
 
-func DecodeUUID(uuid pgtype.UUID) string {
+func FromPgUUID(uuid pgtype.UUID) string {
 	src := uuid.Bytes
 	return fmt.Sprintf("%x-%x-%x-%x-%x", src[0:4], src[4:6], src[6:8], src[8:10], src[10:16])
 }
 
-func EncodeUUID(uuid string) pgtype.UUID {
+func ToPgUUID(uuid string) pgtype.UUID {
 	uuid = uuid[0:8] + uuid[9:13] + uuid[14:18] + uuid[19:23] + uuid[24:]
-	var out [16]byte
-	copy(out[:], uuid)
 
-	return pgtype.UUID{Bytes: out, Valid: true}
+	out, err := hex.DecodeString(uuid)
+	if err != nil {
+		slog.Error("Error decoding UUID", "err", err)
+		return pgtype.UUID{Valid: false}
+	}
+	var buf [16]byte
+	copy(buf[:], out)
+
+	return pgtype.UUID{Bytes: buf, Valid: true}
 }

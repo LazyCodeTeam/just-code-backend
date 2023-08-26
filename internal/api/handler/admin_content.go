@@ -56,7 +56,7 @@ func (h *AdminContentHandler) Register(router chi.Router) {
 }
 
 func (h *AdminContentHandler) handlePutUploadContent(w http.ResponseWriter, r *http.Request) {
-	body, err := util.DeserializeAndValidateBody[[]dto.ExpectedTechnology](r, h.validate)
+	body, err := util.DeserializeAndValidateBodySlice[dto.ExpectedTechnology](r, h.validate)
 	dryRun := r.URL.Query().Get(dryRunQueryParam) == "true"
 	if err != nil {
 		util.WriteError(w, err)

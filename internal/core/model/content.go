@@ -29,4 +29,37 @@ type Task struct {
 	Content     TaskContent
 }
 
-type TaskContent struct{}
+type TaskContent struct {
+	Lesson          *LessonTaskContent
+	SingleSelection *SingleSelectionTaskContent
+	MultiSelection  *MultiSelectionTaskContent
+}
+
+type LessonTaskContent struct {
+	Description string
+	Hints       []Hint
+}
+
+type SingleSelectionTaskContent struct {
+	Description     string
+	Options         []Option
+	CorrectOptionId int
+	Hints           []Hint
+}
+
+type MultiSelectionTaskContent struct {
+	Description      string
+	Options          []Option
+	CorrectOptionIds []int
+	Hints            []Hint
+}
+
+type Hint struct {
+	Id      int
+	Content string
+}
+
+type Option struct {
+	Id      int
+	Content string
+}
