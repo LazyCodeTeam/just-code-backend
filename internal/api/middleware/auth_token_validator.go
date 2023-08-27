@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -13,35 +14,53 @@ import (
 	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
-type AuthTokenValidator struct {
+type AuthTokenValidatorFactory struct {
 	client *auth.Client
 }
 
-func NewAuthTokenValidator(client *auth.Client) *AuthTokenValidator {
-	return &AuthTokenValidator{
+func NewAuthTokenValidator(client *auth.Client) *AuthTokenValidatorFactory {
+	return &AuthTokenValidatorFactory{
 		client: client,
 	}
 }
 
-func (m *AuthTokenValidator) Handle(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authorization")
-		token = strings.Replace(token, "Bearer ", "", 1)
+func (m *AuthTokenValidatorFactory) Get(
+	allowedRoles ...string,
+) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := r.Header.Get("Authorization")
+			token = strings.Replace(token, "Bearer ", "", 1)
 
-		result, err := m.client.VerifyIDToken(r.Context(), token)
-		if err != nil {
-			util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
-			return
-		}
-		authData, err := getAuthDataFromToken(result)
-		if err != nil {
-			util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
-			return
-		}
-		ctx := coreUtil.ContextWithAuthData(r.Context(), authData)
+			result, err := m.client.VerifyIDToken(r.Context(), token)
+			if err != nil {
+				util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
+				return
+			}
+			authData, err := getAuthDataFromToken(result)
+			if err != nil {
+				slog.WarnContext(r.Context(), "Error getting auth data from token", "err", err)
+				util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
+				return
+			}
+			ctx := coreUtil.ContextWithAuthData(r.Context(), authData)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+			if !authData.CanAccess(allowedRoles...) {
+				slog.WarnContext(
+					ctx,
+					"User is not allowed to access this resource",
+					"authData",
+					authData,
+					"allowedRoles",
+					allowedRoles,
+				)
+				util.WriteError(w, failure.New(failure.FailureTypeNotFound))
+				return
+			}
+
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
 }
 
 func getAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
@@ -54,17 +73,17 @@ func getAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
 	case "password":
 		return getEmailAuthDataFromToken(token)
 	}
-	return nil, errors.New("unknown auth type")
+	return nil, fmt.Errorf("Unknown sign in provider: %s", token.Firebase.SignInProvider)
 }
 
 func getEmailAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
 	email, ok := token.Claims["email"].(string)
 	if !ok {
-		return nil, errors.New("email not found")
+		return nil, fmt.Errorf("Email not found in token: %v", token.Claims)
 	}
 	verified, ok := token.Claims["email_verified"].(bool)
 	if !ok {
-		return nil, errors.New("email verified not found")
+		return nil, fmt.Errorf("Email verified not found in token: %v", token.Claims)
 	}
 
 	return &model.AuthData{
@@ -72,5 +91,15 @@ func getEmailAuthDataFromToken(token *auth.Token) (*model.AuthData, error) {
 		Email:    &email,
 		Verified: verified,
 		Id:       token.UID,
+		Roles:    getRolesFromToken(token),
 	}, nil
+}
+
+func getRolesFromToken(token *auth.Token) map[string]bool {
+	roles := map[string]bool{}
+	if isAdmin, ok := token.Claims["admin"].(bool); ok && isAdmin {
+		roles[model.AuthRoleAdmin] = true
+	}
+
+	return roles
 }

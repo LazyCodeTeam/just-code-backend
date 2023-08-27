@@ -18,6 +18,7 @@ import (
 	appMiddleware "github.com/LazyCodeTeam/just-code-backend/internal/api/middleware"
 	"github.com/LazyCodeTeam/just-code-backend/internal/config"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data"
 )
 
@@ -60,7 +61,7 @@ func newMux(
 	handlers []handler.Handler,
 	cmsHandler *handler.AdminContentHandler,
 	healthHandler *handler.HealthHandler,
-	authTokenValidator *appMiddleware.AuthTokenValidator,
+	authTokenValidator *appMiddleware.AuthTokenValidatorFactory,
 ) *chi.Mux {
 	mux := chi.NewRouter()
 
@@ -90,12 +91,12 @@ func newMux(
 	healthHandler.Register(mux)
 
 	mux.Route("/admin/api", func(router chi.Router) {
-		router.Use(authTokenValidator.Handle)
+		router.Use(authTokenValidator.Get(model.AuthRoleAdmin))
 		cmsHandler.Register(router)
 	})
 
 	mux.Route("/api", func(router chi.Router) {
-		router.Use(authTokenValidator.Handle)
+		router.Use(authTokenValidator.Get())
 		for _, h := range handlers {
 			h.Register(router)
 		}
