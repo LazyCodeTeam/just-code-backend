@@ -6,21 +6,32 @@ import (
 )
 
 type Config struct {
-	PgUrl      string
-	BucketName string
-	CdnBaseUrl string
+	FirebaseProjectId string
+	PgUrl             string
+	BucketName        string
+	CdnBaseUrl        string
 }
 
 func New() *Config {
 	pgUrl := dbConnectionUrl()
 	bucketName := bucketName()
 	cdnBaseUrl := cdnBaseUrl()
+	firebaseProjectId := firebaseProjectId()
 
 	return &Config{
-		PgUrl:      pgUrl,
-		BucketName: bucketName,
-		CdnBaseUrl: cdnBaseUrl,
+		PgUrl:             pgUrl,
+		BucketName:        bucketName,
+		CdnBaseUrl:        cdnBaseUrl,
+		FirebaseProjectId: firebaseProjectId,
 	}
+}
+
+func firebaseProjectId() string {
+	firebaseProjectId := os.Getenv("FIREBASE_PROJECT_ID")
+	if firebaseProjectId == "" {
+		return "just-code-dev"
+	}
+	return firebaseProjectId
 }
 
 func cdnBaseUrl() string {

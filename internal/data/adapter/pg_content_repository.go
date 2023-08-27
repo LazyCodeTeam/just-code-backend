@@ -134,3 +134,16 @@ func (r *PgContentRepository) DeleteTechnologyById(ctx context.Context, id strin
 
 	return nil
 }
+
+func (r *PgContentRepository) GetTechnologiesWithSectionsPreview(
+	ctx context.Context,
+) ([]model.TechnologyWithSectionsPreview, error) {
+	rows, err := r.queries.GetAllTechnologiesWithSectionsPreview(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to get technologies with sections preview", "err", err)
+		return nil, err
+	}
+	technologies := mapper.GetAllTechnologiesWithSectionsPreviewRowsToDomain(rows)
+
+	return technologies, nil
+}

@@ -90,3 +90,42 @@ func UpsertTaskParamsFromDomain(task model.Task) (db.UpsertTaskParams, error) {
 		Content:     content,
 	}, nil
 }
+
+func GetAllTechnologiesWithSectionsPreviewRowsToDomain(
+	rows []db.GetAllTechnologiesWithSectionsPreviewRow,
+) []model.TechnologyWithSectionsPreview {
+	technologies := make([]model.TechnologyWithSectionsPreview, 0)
+	var currentTechnology model.Technology
+	sectionsPreview := make([]model.SectionPreview, 0)
+	for _, row := range rows {
+		technologyId := util.FromPgUUID(row.ID)
+		if currentTechnology.Id != technologyId {
+			if currentTechnology.Id != "" {
+				technologies = append(technologies, model.TechnologyWithSectionsPreview{
+					Technology: currentTechnology,
+					Sections:   sectionsPreview,
+				})
+				sectionsPreview = make([]model.SectionPreview, 0)
+			}
+			currentTechnology = model.Technology{
+				Id:          technologyId,
+				Title:       row.Title,
+				Description: util.FromPgString(row.Description),
+				ImageUrl:    util.FromPgString(row.ImageUrl),
+				Position:    int(row.Position),
+			}
+		}
+		sectionsPreview = append(sectionsPreview, model.SectionPreview{
+			Id:    util.FromPgUUID(row.SectionID),
+			Title: row.SectionTitle,
+		})
+	}
+	if currentTechnology.Id != "" {
+		technologies = append(technologies, model.TechnologyWithSectionsPreview{
+			Technology: currentTechnology,
+			Sections:   sectionsPreview,
+		})
+	}
+
+	return technologies
+}

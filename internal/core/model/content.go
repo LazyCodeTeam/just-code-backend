@@ -63,3 +63,25 @@ type Option struct {
 	Id      int
 	Content string
 }
+
+type SectionPreview struct {
+	Id    string
+	Title string
+}
+
+type TaskPreview struct {
+	Id       string
+	Title    string
+	IsPublic bool
+	DoneAt   *string
+}
+
+type TechnologyWithSectionsPreview struct {
+	Technology
+	Sections []SectionPreview
+}
+
+type SectionWithTasksPreview struct {
+	Section
+	Tasks []TaskPreview
+}

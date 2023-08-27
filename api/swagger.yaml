@@ -341,6 +341,20 @@ paths:
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Health check
+    /api/v1/content/technologies:
+        get:
+            description: This will return all technologies along with preview of their sections
+            operationId: technologiesGet
+            responses:
+                "200":
+                    $ref: '#/responses/contentGetTechnologiesResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get technologies
+            tags:
+                - content
     /api/v1/profile/current:
         get:
             description: Returns current profile. If profile does not exist 404 error will be returned.
@@ -419,6 +433,10 @@ paths:
 produces:
     - application/json
 responses:
+    contentGetTechnologiesResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/Profile'
     emptyResponse:
         description: Empty response
         schema:
