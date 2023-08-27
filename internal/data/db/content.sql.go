@@ -179,27 +179,23 @@ const getAllTechnologiesWithSectionsPreview = `-- name: GetAllTechnologiesWithSe
 SELECT technology.id, technology.title, technology.description, technology.image_url, technology.position, technology.updated_at, technology.created_at, 
   section.id as section_id, 
   section.position, 
-  section.title as section_title, 
-  section.description as section_description, 
-  section.image_url as section_image_url
+  section.title as section_title
 FROM technology
-LEFT JOIN section ON section.technology_id = technology.id
+JOIN section ON section.technology_id = technology.id
 ORDER BY technology.position ASC, section.position ASC
 `
 
 type GetAllTechnologiesWithSectionsPreviewRow struct {
-	ID                 pgtype.UUID
-	Title              string
-	Description        pgtype.Text
-	ImageUrl           pgtype.Text
-	Position           int32
-	UpdatedAt          pgtype.Timestamptz
-	CreatedAt          pgtype.Timestamptz
-	SectionID          pgtype.UUID
-	Position_2         pgtype.Int4
-	SectionTitle       pgtype.Text
-	SectionDescription pgtype.Text
-	SectionImageUrl    pgtype.Text
+	ID           pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Position     int32
+	UpdatedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	SectionID    pgtype.UUID
+	Position_2   int32
+	SectionTitle string
 }
 
 func (q *Queries) GetAllTechnologiesWithSectionsPreview(ctx context.Context) ([]GetAllTechnologiesWithSectionsPreviewRow, error) {
@@ -222,8 +218,6 @@ func (q *Queries) GetAllTechnologiesWithSectionsPreview(ctx context.Context) ([]
 			&i.SectionID,
 			&i.Position_2,
 			&i.SectionTitle,
-			&i.SectionDescription,
-			&i.SectionImageUrl,
 		); err != nil {
 			return nil, err
 		}

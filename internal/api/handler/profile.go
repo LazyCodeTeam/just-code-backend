@@ -15,7 +15,6 @@ import (
 
 // swagger:response profileGetCurrentResponse
 type profileGetCurrentResponse struct {
-	// The error message
 	// in: body
 	Body dto.Profile
 }
@@ -46,7 +45,7 @@ func NewProfileHandler(
 	uploadProfileAvatar *usecase.UploadProfileAvatar,
 	deleteProfileAvatar *usecase.DeleteProfileAvatar,
 	validate *validator.Validate,
-) Handler {
+) *profileHandler {
 	return &profileHandler{
 		getCurrentUser:       getCurrentUser,
 		updateCurrentprofile: updateCurrentprofile,

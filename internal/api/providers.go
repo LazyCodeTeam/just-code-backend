@@ -16,10 +16,12 @@ func Providers() []interface{} {
 		fx.Annotate(
 			handler.NewProfileHandler,
 			fx.ResultTags(`group:"routes"`),
+			fx.As(new(handler.Handler)),
 		),
 		fx.Annotate(
 			handler.NewContentHandler,
 			fx.ResultTags(`group:"routes"`),
+			fx.As(new(handler.Handler)),
 		),
 		handler.NewAdminContentHandler,
 	}

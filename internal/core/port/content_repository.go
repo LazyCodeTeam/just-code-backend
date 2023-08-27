@@ -24,4 +24,8 @@ type ContentRepository interface {
 	DeleteSectionById(ctx context.Context, id string) error
 
 	DeleteTechnologyById(ctx context.Context, id string) error
+
+	GetTechnologiesWithSectionsPreview(
+		ctx context.Context,
+	) ([]model.TechnologyWithSectionsPreview, error)
 }

@@ -11,5 +11,6 @@ func Providers() []interface{} {
 		usecase.NewUploadProfileAvatar,
 		usecase.NewDeleteProfileAvatar,
 		usecase.NewUploadContent,
+		usecase.NewGetTechnologies,
 	}
 }

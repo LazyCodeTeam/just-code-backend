@@ -114,9 +114,9 @@ func newServer(mux *chi.Mux) *http.Server {
 	return &server
 }
 
-func newFirebaseApp() (*firebase.App, error) {
+func newFirebaseApp(c *config.Config) (*firebase.App, error) {
 	config := &firebase.Config{
-		ProjectID: "just-code-dev",
+		ProjectID: c.FirebaseProjectId,
 	}
 	app, err := firebase.NewApp(context.Background(), config)
 	if err != nil {

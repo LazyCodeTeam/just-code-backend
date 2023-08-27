@@ -21,6 +21,11 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
+        name  = "FIREBASE_PROJECT_ID"
+        value = google_firebase_project.project.display_name
+      }
+
+      env {
         name  = "CDN_BASE_URL"
         value = "http://${google_compute_global_address.cdn.address}"
       }
