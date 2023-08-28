@@ -147,3 +147,20 @@ func (r *PgContentRepository) GetTechnologiesWithSectionsPreview(
 
 	return technologies, nil
 }
+
+func (r *PgContentRepository) GetSectionsWithTasksPreview(
+	ctx context.Context,
+	technologyID string,
+) ([]model.SectionWithTasksPreview, error) {
+	rows, err := r.queries.GetAllTechnolotySectionsWithTasksPreview(
+		ctx,
+		util.ToPgUUID(technologyID),
+	)
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to get sections with tasks preview", "err", err)
+		return nil, err
+	}
+	sections := mapper.GetAllTechnolotySectionsWithTasksPreviewRowsToDomain(rows)
+
+	return sections, nil
+}

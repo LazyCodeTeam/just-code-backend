@@ -28,4 +28,9 @@ type ContentRepository interface {
 	GetTechnologiesWithSectionsPreview(
 		ctx context.Context,
 	) ([]model.TechnologyWithSectionsPreview, error)
+
+	GetSectionsWithTasksPreview(
+		ctx context.Context,
+		technologyID string,
+	) ([]model.SectionWithTasksPreview, error)
 }

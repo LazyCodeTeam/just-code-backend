@@ -16,21 +16,30 @@ import (
 // swagger:response contentGetTechnologiesResponse
 type contentGetTechnologiesResponse struct {
 	// in: body
-	Body dto.Profile
+	Body []dto.Technology
+}
+
+// swagger:response getSectionsResponse
+type getSectionsResponse struct {
+	// in: body
+	Body []dto.Section
 }
 
 type contentHandler struct {
 	validate        *validator.Validate
 	getTechnologies *usecase.GetTechnologies
+	getSections     *usecase.GetSections
 }
 
 func NewContentHandler(
 	validate *validator.Validate,
 	getTechnologies *usecase.GetTechnologies,
+	getSections *usecase.GetSections,
 ) *contentHandler {
 	return &contentHandler{
 		validate:        validate,
 		getTechnologies: getTechnologies,
+		getSections:     getSections,
 	}
 }
 
@@ -47,6 +56,17 @@ func (h *contentHandler) Register(router chi.Router) {
 		//   401: errorResponse
 		//   500: errorResponse
 		r.Get("/technologies", h.handleGetTechnologies)
+		// swagger:route GET /api/v1/content/technology/{technologyId}/sections content sectionsGet
+		//
+		// Get technology sections
+		//
+		// This will return all sections of technology with preview of their tasks
+		//
+		// Responses:
+		//   200: contentGetSectionsResponse
+		//   401: errorResponse
+		//   500: errorResponse
+		r.Get("/technology/{technologyId}/sections", h.handleGetSections)
 	})
 }
 
@@ -60,6 +80,22 @@ func (h *contentHandler) handleGetTechnologies(w http.ResponseWriter, r *http.Re
 	dtos := coreUtil.MapSlice[model.TechnologyWithSectionsPreview, dto.Technology](
 		technologies,
 		dto.TechnologyFromDomain,
+	)
+
+	util.WriteResponseJson(w, dtos)
+}
+
+func (h *contentHandler) handleGetSections(w http.ResponseWriter, r *http.Request) {
+	technologyId := chi.URLParam(r, "technologyId")
+
+	sections, err := h.getSections.Invoke(r.Context(), technologyId)
+	if err != nil {
+		util.WriteError(w, err)
+		return
+	}
+	dtos := coreUtil.MapSlice[model.SectionWithTasksPreview, dto.Section](
+		sections,
+		dto.SectionFromDomain,
 	)
 
 	util.WriteResponseJson(w, dtos)

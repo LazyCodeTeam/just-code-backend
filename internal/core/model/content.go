@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Technology struct {
 	Id          string
 	Title       string
@@ -73,7 +75,7 @@ type TaskPreview struct {
 	Id       string
 	Title    string
 	IsPublic bool
-	DoneAt   *string
+	DoneAt   *time.Time
 }
 
 type TechnologyWithSectionsPreview struct {
