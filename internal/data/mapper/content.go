@@ -94,38 +94,52 @@ func UpsertTaskParamsFromDomain(task model.Task) (db.UpsertTaskParams, error) {
 func GetAllTechnologiesWithSectionsPreviewRowsToDomain(
 	rows []db.GetAllTechnologiesWithSectionsPreviewRow,
 ) []model.TechnologyWithSectionsPreview {
-	technologies := make([]model.TechnologyWithSectionsPreview, 0)
-	var currentTechnology model.Technology
-	sectionsPreview := make([]model.SectionPreview, 0)
-	for _, row := range rows {
-		technologyId := util.FromPgUUID(row.ID)
-		if currentTechnology.Id != technologyId {
-			if currentTechnology.Id != "" {
-				technologies = append(technologies, model.TechnologyWithSectionsPreview{
-					Technology: currentTechnology,
-					Sections:   sectionsPreview,
-				})
-				sectionsPreview = make([]model.SectionPreview, 0)
+	return util.MapJoinedRows[db.GetAllTechnologiesWithSectionsPreviewRow, model.TechnologyWithSectionsPreview, model.SectionPreview](
+		rows,
+		func(row db.GetAllTechnologiesWithSectionsPreviewRow, sections []model.SectionPreview) model.TechnologyWithSectionsPreview {
+			return model.TechnologyWithSectionsPreview{
+				Technology: model.Technology{
+					Id:          util.FromPgUUID(row.ID),
+					Title:       row.Title,
+					Description: util.FromPgString(row.Description),
+					ImageUrl:    util.FromPgString(row.ImageUrl),
+					Position:    int(row.Position),
+				},
+				Sections: sections,
 			}
-			currentTechnology = model.Technology{
-				Id:          technologyId,
-				Title:       row.Title,
-				Description: util.FromPgString(row.Description),
-				ImageUrl:    util.FromPgString(row.ImageUrl),
-				Position:    int(row.Position),
+		},
+		func(row db.GetAllTechnologiesWithSectionsPreviewRow) (parentID string, child model.SectionPreview) {
+			return util.FromPgUUID(row.ID), model.SectionPreview{
+				Id:    util.FromPgUUID(row.SectionID),
+				Title: row.SectionTitle,
 			}
-		}
-		sectionsPreview = append(sectionsPreview, model.SectionPreview{
-			Id:    util.FromPgUUID(row.SectionID),
-			Title: row.SectionTitle,
-		})
-	}
-	if currentTechnology.Id != "" {
-		technologies = append(technologies, model.TechnologyWithSectionsPreview{
-			Technology: currentTechnology,
-			Sections:   sectionsPreview,
-		})
-	}
+		},
+	)
+}
 
-	return technologies
+func GetAllTechnolotySectionsWithTasksPreviewRowsToDomain(
+	rows []db.GetAllTechnolotySectionsWithTasksPreviewRow,
+) []model.SectionWithTasksPreview {
+	return util.MapJoinedRows[db.GetAllTechnolotySectionsWithTasksPreviewRow, model.SectionWithTasksPreview, model.TaskPreview](
+		rows,
+		func(row db.GetAllTechnolotySectionsWithTasksPreviewRow, tasks []model.TaskPreview) model.SectionWithTasksPreview {
+			return model.SectionWithTasksPreview{
+				Section: model.Section{
+					Id:           util.FromPgUUID(row.ID),
+					TechnologyId: util.FromPgUUID(row.TechnologyID),
+					Title:        row.Title,
+					Description:  util.FromPgString(row.Description),
+					ImageUrl:     util.FromPgString(row.ImageUrl),
+				},
+				Tasks: tasks,
+			}
+		},
+		func(row db.GetAllTechnolotySectionsWithTasksPreviewRow) (parentID string, child model.TaskPreview) {
+			return util.FromPgUUID(row.ID), model.TaskPreview{
+				Id:       util.FromPgUUID(row.TaskID),
+				Title:    row.TaskTitle,
+				IsPublic: row.TaskIsPublic,
+			}
+		},
+	)
 }

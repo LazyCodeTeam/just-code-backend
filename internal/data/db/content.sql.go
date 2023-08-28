@@ -267,10 +267,10 @@ SELECT section.id, section.technology_id, section.title, section.description, se
   task.id as task_id, 
   task.position, 
   task.title as task_title, 
-  task.image_url as task_image_url
+  task.is_public as task_is_public
 FROM section
-LEFT JOIN task ON task.section_id = section.id
-WHERE section.technology_id = $1
+JOIN task ON task.section_id = section.id
+WHERE section.technology_id = $1 AND task.position IS NOT NULL
 ORDER BY section.position ASC, task.position ASC
 `
 
@@ -285,8 +285,8 @@ type GetAllTechnolotySectionsWithTasksPreviewRow struct {
 	CreatedAt    pgtype.Timestamptz
 	TaskID       pgtype.UUID
 	Position_2   pgtype.Int4
-	TaskTitle    pgtype.Text
-	TaskImageUrl pgtype.Text
+	TaskTitle    string
+	TaskIsPublic bool
 }
 
 func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, technologyID pgtype.UUID) ([]GetAllTechnolotySectionsWithTasksPreviewRow, error) {
@@ -310,7 +310,7 @@ func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, 
 			&i.TaskID,
 			&i.Position_2,
 			&i.TaskTitle,
-			&i.TaskImageUrl,
+			&i.TaskIsPublic,
 		); err != nil {
 			return nil, err
 		}

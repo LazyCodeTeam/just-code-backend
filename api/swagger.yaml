@@ -291,8 +291,116 @@ definitions:
         title: ProfileDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Section:
+        description: Represents section with preview of tasks.
+        properties:
+            description:
+                description: Section description
+                type: string
+                x-go-name: Description
+            id:
+                description: Section id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Section image url
+                type: string
+                x-go-name: ImageUrl
+            name:
+                description: Section name
+                type: string
+                x-go-name: Name
+            tasks:
+                description: Preview of section tasks
+                items:
+                    $ref: '#/definitions/TaskPreview'
+                type: array
+                x-go-name: Tasks
+        required:
+            - id
+            - name
+            - tasks
+        title: SectionDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    SectionPreview:
+        description: Represents section preview.
+        properties:
+            id:
+                description: Section id -- UUID
+                type: string
+                x-go-name: Id
+            name:
+                description: Section name
+                type: string
+                x-go-name: Name
+        required:
+            - id
+            - name
+        title: SectionPreviewDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     TaskContentType:
         type: string
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    TaskPreview:
+        description: Represents task preview.
+        properties:
+            done_at:
+                description: Date when task was done - nil if task was not done
+                format: date-time
+                type: string
+                x-go-name: DoneAt
+            id:
+                description: Section id -- UUID
+                type: string
+                x-go-name: Id
+            is_public:
+                description: Is task public - not public task will not be accessible for anonymous users
+                type: boolean
+                x-go-name: IsPublic
+            name:
+                description: Section name
+                type: string
+                x-go-name: Name
+        required:
+            - id
+            - name
+            - is_public
+        title: TaskPreviewDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Technology:
+        description: Represents technology with preview of sections.
+        properties:
+            description:
+                description: Technology description
+                type: string
+                x-go-name: Description
+            id:
+                description: Technology id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Technology image url
+                type: string
+                x-go-name: ImageUrl
+            name:
+                description: Technology name
+                type: string
+                x-go-name: Name
+            sections:
+                description: Preview of technology sections
+                items:
+                    $ref: '#/definitions/SectionPreview'
+                type: array
+                x-go-name: Section
+        required:
+            - id
+            - name
+            - sections
+        title: TechnologyDto
+        type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
 info:
     contact:
@@ -353,6 +461,20 @@ paths:
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Get technologies
+            tags:
+                - content
+    /api/v1/content/technology/{technologyId}/sections:
+        get:
+            description: This will return all sections of technology with preview of their tasks
+            operationId: sectionsGet
+            responses:
+                "200":
+                    $ref: '#/responses/contentGetSectionsResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get technology sections
             tags:
                 - content
     /api/v1/profile/current:
@@ -436,7 +558,9 @@ responses:
     contentGetTechnologiesResponse:
         description: ""
         schema:
-            $ref: '#/definitions/Profile'
+            items:
+                $ref: '#/definitions/Technology'
+            type: array
     emptyResponse:
         description: Empty response
         schema:
@@ -445,6 +569,12 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/Error'
+    getSectionsResponse:
+        description: ""
+        schema:
+            items:
+                $ref: '#/definitions/Section'
+            type: array
     profileGetCurrentResponse:
         description: ""
         schema:
