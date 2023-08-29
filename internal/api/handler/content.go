@@ -19,10 +19,16 @@ type contentGetTechnologiesResponse struct {
 	Body []dto.Technology
 }
 
-// swagger:response getSectionsResponse
+// swagger:response contentGetSectionsResponse
 type getSectionsResponse struct {
 	// in: body
 	Body []dto.Section
+}
+
+// swagger:parameters sectionsGet
+type getSectionsArgs struct {
+	// in: path
+	TechnologyId string `json:"technologyId"`
 }
 
 type contentHandler struct {
