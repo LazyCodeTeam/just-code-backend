@@ -467,6 +467,12 @@ paths:
         get:
             description: This will return all sections of technology with preview of their tasks
             operationId: sectionsGet
+            parameters:
+                - in: path
+                  name: technologyId
+                  required: true
+                  type: string
+                  x-go-name: TechnologyId
             responses:
                 "200":
                     $ref: '#/responses/contentGetSectionsResponse'
@@ -555,6 +561,12 @@ paths:
 produces:
     - application/json
 responses:
+    contentGetSectionsResponse:
+        description: ""
+        schema:
+            items:
+                $ref: '#/definitions/Section'
+            type: array
     contentGetTechnologiesResponse:
         description: ""
         schema:
@@ -569,12 +581,6 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/Error'
-    getSectionsResponse:
-        description: ""
-        schema:
-            items:
-                $ref: '#/definitions/Section'
-            type: array
     profileGetCurrentResponse:
         description: ""
         schema:
