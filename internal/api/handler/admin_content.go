@@ -35,21 +35,32 @@ type uploadContentParams struct {
 	DryRun bool `json:"dry_run"`
 }
 
+// swagger:parameters contentDeleteAsset
+type deleteContentAssetParams struct {
+	// Asset id
+	//
+	// in: path
+	AssetId bool `json:"assetId"`
+}
+
 type AdminContentHandler struct {
 	validate      *validator.Validate
 	uploadContent *usecase.UploadContent
 	saveAsset     *usecase.SaveAsset
+	deleteAsset   *usecase.DeleteAsset
 }
 
 func NewAdminContentHandler(
 	validate *validator.Validate,
 	uploadContent *usecase.UploadContent,
 	saveAsset *usecase.SaveAsset,
+	deleteAsset *usecase.DeleteAsset,
 ) *AdminContentHandler {
 	return &AdminContentHandler{
 		validate:      validate,
 		uploadContent: uploadContent,
 		saveAsset:     saveAsset,
+		deleteAsset:   deleteAsset,
 	}
 }
 
@@ -74,12 +85,34 @@ func (h *AdminContentHandler) Register(router chi.Router) {
 		// Takes asset and uploads it to the storage. Returns url of uploaded asset.
 		//
 		// Responses:
-		//   200: contentAssetPutResponse
+		//   201: contentAssetPutResponse
 		//   400: errorResponse
 		//   401: errorResponse
 		//   500: errorResponse
 		router.Put("/asset", h.handlePutContentAsset)
+		// swagger:route Delete /admin/api/v1/content/asset/{assetId} admin contentDeleteAsset
+		//
+		// Delete content asset
+		//
+		// Takes asset id and deletes it from the storage.
+		//
+		// Responses:
+		//   204: emptyResponse
+		//   400: errorResponse
+		//   401: errorResponse
+		//   500: errorResponse
+		router.Delete("/asset/{assetId}", h.handleDeleteContentAsset)
 	})
+}
+
+func (h *AdminContentHandler) handleDeleteContentAsset(w http.ResponseWriter, r *http.Request) {
+	assetId := chi.URLParam(r, "assetId")
+	err := h.deleteAsset.Invoke(r.Context(), assetId)
+	if err != nil {
+		util.WriteError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *AdminContentHandler) handlePutContentAsset(w http.ResponseWriter, r *http.Request) {

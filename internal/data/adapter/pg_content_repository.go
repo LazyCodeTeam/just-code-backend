@@ -183,3 +183,14 @@ func (r *PgContentRepository) SaveAsset(
 
 	return asset, nil
 }
+
+func (r *PgContentRepository) DeleteAsset(ctx context.Context, id string) error {
+	err := r.queries.DeleteAssetById(ctx, util.ToPgUUID(id))
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to delete asset by id", "err", err)
+
+		return err
+	}
+
+	return nil
+}

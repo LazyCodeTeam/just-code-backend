@@ -469,7 +469,7 @@ paths:
                         type: integer
                     type: array
             responses:
-                "200":
+                "201":
                     $ref: '#/responses/contentAssetPutResponse'
                 "400":
                     $ref: '#/responses/errorResponse'
@@ -478,6 +478,29 @@ paths:
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Upload content asset
+            tags:
+                - admin
+    /admin/api/v1/content/asset/{assetId}:
+        delete:
+            description: Takes asset id and deletes it from the storage.
+            operationId: contentDeleteAsset
+            parameters:
+                - description: Asset id
+                  in: path
+                  name: assetId
+                  required: true
+                  type: boolean
+                  x-go-name: AssetId
+            responses:
+                "204":
+                    $ref: '#/responses/emptyResponse'
+                "400":
+                    $ref: '#/responses/errorResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Delete content asset
             tags:
                 - admin
     /api/health:
