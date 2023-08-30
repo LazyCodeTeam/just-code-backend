@@ -7,7 +7,7 @@ require (
 	firebase.google.com/go/v4 v4.12.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-openapi/runtime v0.26.0
-	github.com/go-playground/validator/v10 v10.15.1
+	github.com/go-playground/validator/v10 v10.15.3
 	github.com/jackc/pgx/v5 v5.4.3
 	go.uber.org/fx v1.20.0
 )
