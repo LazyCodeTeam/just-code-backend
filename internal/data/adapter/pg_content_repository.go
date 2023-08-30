@@ -194,3 +194,16 @@ func (r *PgContentRepository) DeleteAsset(ctx context.Context, id string) error 
 
 	return nil
 }
+
+func (r *PgContentRepository) GetAssets(ctx context.Context) ([]model.Asset, error) {
+	dbAssets, err := r.queries.GetAllAssets(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to get all assets", "err", err)
+
+		return nil, err
+	}
+
+	assets := coreUtil.MapSlice(dbAssets, mapper.AssetToDomain)
+
+	return assets, nil
+}
