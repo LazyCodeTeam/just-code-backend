@@ -105,3 +105,17 @@ SET
 
 -- name: DeleteTaskById :exec
 DELETE FROM task WHERE id = $1;
+
+-- name: DeleteAssetById :exec
+DELETE FROM asset WHERE id = $1;
+
+-- name: InsertAsset :one
+INSERT INTO asset (
+  id,
+  url
+) VALUES (
+  $1, $2
+) RETURNING *;
+
+-- name: GetAllAssets :many
+SELECT * FROM asset;

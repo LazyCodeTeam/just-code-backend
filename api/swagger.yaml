@@ -2,6 +2,23 @@ basePath: /
 consumes:
     - application/json
 definitions:
+    Asset:
+        description: '# Represents asset'
+        properties:
+            id:
+                description: Asset id
+                type: string
+                x-go-name: Id
+            url:
+                description: Asset url
+                type: string
+                x-go-name: Url
+        required:
+            - id
+            - url
+        title: AssetDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     CreateProfileParams:
         description: Represents params for creating profile.
         properties:
@@ -439,6 +456,30 @@ paths:
             summary: Upload content
             tags:
                 - admin
+    /admin/api/v1/content/asset:
+        put:
+            description: Takes asset and uploads it to the storage. Returns url of uploaded asset.
+            operationId: contentPutAsset
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    items:
+                        format: uint8
+                        type: integer
+                    type: array
+            responses:
+                "200":
+                    $ref: '#/responses/contentAssetPutResponse'
+                "400":
+                    $ref: '#/responses/errorResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Upload content asset
+            tags:
+                - admin
     /api/health:
         get:
             description: This will check if the service is up and running.
@@ -561,6 +602,10 @@ paths:
 produces:
     - application/json
 responses:
+    contentAssetPutResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/Asset'
     contentGetSectionsResponse:
         description: ""
         schema:

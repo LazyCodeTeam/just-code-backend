@@ -8,6 +8,12 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Asset struct {
+	ID        pgtype.UUID
+	Url       string
+	CreatedAt pgtype.Timestamptz
+}
+
 type Profile struct {
 	ID        string
 	Name      string

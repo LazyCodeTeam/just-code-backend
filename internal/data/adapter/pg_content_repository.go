@@ -164,3 +164,22 @@ func (r *PgContentRepository) GetSectionsWithTasksPreview(
 
 	return sections, nil
 }
+
+func (r *PgContentRepository) SaveAsset(
+	ctx context.Context,
+	id string,
+	url string,
+) (model.Asset, error) {
+	dbAsset, err := r.queries.InsertAsset(ctx, db.InsertAssetParams{
+		ID:  util.ToPgUUID(id),
+		Url: url,
+	})
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to save asset", "err", err)
+
+		return model.Asset{}, err
+	}
+	asset := mapper.AssetToDomain(dbAsset)
+
+	return asset, nil
+}

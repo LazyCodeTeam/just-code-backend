@@ -33,4 +33,6 @@ type ContentRepository interface {
 		ctx context.Context,
 		technologyID string,
 	) ([]model.SectionWithTasksPreview, error)
+
+	SaveAsset(ctx context.Context, id string, url string) (model.Asset, error)
 }

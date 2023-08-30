@@ -11,6 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const deleteAssetById = `-- name: DeleteAssetById :exec
+DELETE FROM asset WHERE id = $1
+`
+
+func (q *Queries) DeleteAssetById(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAssetById, id)
+	return err
+}
+
 const deleteSectionById = `-- name: DeleteSectionById :exec
 DELETE FROM section WHERE id = $1
 `
@@ -36,6 +45,30 @@ DELETE FROM technology WHERE id = $1
 func (q *Queries) DeleteTechnologyById(ctx context.Context, id pgtype.UUID) error {
 	_, err := q.db.Exec(ctx, deleteTechnologyById, id)
 	return err
+}
+
+const getAllAssets = `-- name: GetAllAssets :many
+SELECT id, url, created_at FROM asset
+`
+
+func (q *Queries) GetAllAssets(ctx context.Context) ([]Asset, error) {
+	rows, err := q.db.Query(ctx, getAllAssets)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Asset
+	for rows.Next() {
+		var i Asset
+		if err := rows.Scan(&i.ID, &i.Url, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getAllSectionTasks = `-- name: GetAllSectionTasks :many
@@ -320,6 +353,27 @@ func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, 
 		return nil, err
 	}
 	return items, nil
+}
+
+const insertAsset = `-- name: InsertAsset :one
+INSERT INTO asset (
+  id,
+  url
+) VALUES (
+  $1, $2
+) RETURNING id, url, created_at
+`
+
+type InsertAssetParams struct {
+	ID  pgtype.UUID
+	Url string
+}
+
+func (q *Queries) InsertAsset(ctx context.Context, arg InsertAssetParams) (Asset, error) {
+	row := q.db.QueryRow(ctx, insertAsset, arg.ID, arg.Url)
+	var i Asset
+	err := row.Scan(&i.ID, &i.Url, &i.CreatedAt)
+	return i, err
 }
 
 const upsertSection = `-- name: UpsertSection :exec

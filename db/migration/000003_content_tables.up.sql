@@ -1,5 +1,12 @@
 BEGIN;
 
+CREATE TABLE asset (
+  id uuid NOT NULL,
+  url varchar(1024) NOT NULL,
+  created_at timestamp with TIME ZONE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE technology (
   id uuid NOT NULL,
   title varchar(1024) NOT NULL,
