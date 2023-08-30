@@ -41,7 +41,6 @@ func (s *SaveAsset) Invoke(ctx context.Context, assetReader io.Reader) (model.As
 
 	asset, err := s.contentRepository.SaveAsset(ctx, id.String(), assetUrl)
 	if err != nil {
-		s.fileRepository.DeleteContentAsset(ctx, assetUrl)
 		return model.Asset{}, err
 	}
 

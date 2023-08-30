@@ -35,4 +35,6 @@ type ContentRepository interface {
 	) ([]model.SectionWithTasksPreview, error)
 
 	SaveAsset(ctx context.Context, id string, url string) (model.Asset, error)
+
+	DeleteAsset(ctx context.Context, id string) error
 }
