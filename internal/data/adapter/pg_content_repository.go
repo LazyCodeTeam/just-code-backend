@@ -165,6 +165,26 @@ func (r *PgContentRepository) GetSectionsWithTasksPreview(
 	return sections, nil
 }
 
+func (r *PgContentRepository) GetSectionTasks(
+	ctx context.Context,
+	sectionID string,
+) ([]model.Task, error) {
+	rows, err := r.queries.GetAllSectionTasks(ctx, util.ToPgUUID(sectionID))
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to get tasks", "err", err)
+		return nil, err
+	}
+
+	tasks, err := coreUtil.TryMapSlice(rows, mapper.TaskToDomain)
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to map tasks", "err", err)
+
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
 func (r *PgContentRepository) SaveAsset(
 	ctx context.Context,
 	id string,

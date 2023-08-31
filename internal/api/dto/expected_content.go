@@ -120,9 +120,9 @@ type ExpectedTask struct {
 	Content ExpectedTaskContent `json:"content"     validate:"required,dive"`
 }
 
-// TaskContentDto
+// ExpectedTaskContentDto
 //
-// Represents task content.
+// Represents expected task content.
 //
 // swagger:model
 type ExpectedTaskContent struct {
@@ -243,6 +243,8 @@ func expectedTaskToDomain(
 	position *int,
 	parentSectionId string,
 ) model.Task {
+	content := contentToDomain(expectedTask.Content)
+
 	return model.Task{
 		Id:          expectedTask.Id,
 		SectionId:   parentSectionId,
@@ -252,7 +254,7 @@ func expectedTaskToDomain(
 		Position:    position,
 		Difficulty:  expectedTask.Difficulty,
 		IsPublic:    expectedTask.IsPublic,
-		Content:     contentToDomain(expectedTask.Content),
+		Content:     &content,
 	}
 }
 
