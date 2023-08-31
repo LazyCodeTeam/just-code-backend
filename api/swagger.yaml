@@ -471,8 +471,6 @@ paths:
             responses:
                 "201":
                     $ref: '#/responses/contentAssetPutResponse'
-                "400":
-                    $ref: '#/responses/errorResponse'
                 "401":
                     $ref: '#/responses/errorResponse'
                 "500":
@@ -494,13 +492,25 @@ paths:
             responses:
                 "204":
                     $ref: '#/responses/emptyResponse'
-                "400":
-                    $ref: '#/responses/errorResponse'
                 "401":
                     $ref: '#/responses/errorResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Delete content asset
+            tags:
+                - admin
+    /admin/api/v1/content/assets:
+        get:
+            description: Returns all content assets.
+            operationId: contentGetAssets
+            responses:
+                "200":
+                    $ref: '#/responses/contentAssetsGetResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get content assets
             tags:
                 - admin
     /api/health:
@@ -629,6 +639,12 @@ responses:
         description: ""
         schema:
             $ref: '#/definitions/Asset'
+    contentAssetsGetResponse:
+        description: ""
+        schema:
+            items:
+                $ref: '#/definitions/Asset'
+            type: array
     contentGetSectionsResponse:
         description: ""
         schema:

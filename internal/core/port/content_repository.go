@@ -37,4 +37,6 @@ type ContentRepository interface {
 	SaveAsset(ctx context.Context, id string, url string) (model.Asset, error)
 
 	DeleteAsset(ctx context.Context, id string) error
+
+	GetAssets(ctx context.Context) ([]model.Asset, error)
 }

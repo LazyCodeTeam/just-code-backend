@@ -9,6 +9,7 @@ import (
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/util"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/usecase"
+	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 )
 
 const dryRunQueryParam = "dry_run"
@@ -17,6 +18,12 @@ const dryRunQueryParam = "dry_run"
 type contentAssetPutResponse struct {
 	// in: body
 	Body dto.Asset
+}
+
+// swagger:response contentAssetsGetResponse
+type contentAssetsGetResponse struct {
+	// in: body
+	Body []dto.Asset
 }
 
 // swagger:parameters contentPutAsset
@@ -48,6 +55,7 @@ type AdminContentHandler struct {
 	uploadContent *usecase.UploadContent
 	saveAsset     *usecase.SaveAsset
 	deleteAsset   *usecase.DeleteAsset
+	getAssets     *usecase.GetAssets
 }
 
 func NewAdminContentHandler(
@@ -55,12 +63,14 @@ func NewAdminContentHandler(
 	uploadContent *usecase.UploadContent,
 	saveAsset *usecase.SaveAsset,
 	deleteAsset *usecase.DeleteAsset,
+	getAssets *usecase.GetAssets,
 ) *AdminContentHandler {
 	return &AdminContentHandler{
 		validate:      validate,
 		uploadContent: uploadContent,
 		saveAsset:     saveAsset,
 		deleteAsset:   deleteAsset,
+		getAssets:     getAssets,
 	}
 }
 
@@ -78,6 +88,17 @@ func (h *AdminContentHandler) Register(router chi.Router) {
 		//   401: errorResponse
 		//   500: errorResponse
 		router.Put("/", h.handlePutContent)
+		// swagger:route GET /admin/api/v1/content/assets admin contentGetAssets
+		//
+		// Get content assets
+		//
+		// Returns all content assets.
+		//
+		// Responses:
+		//   200: contentAssetsGetResponse
+		//   401: errorResponse
+		//   500: errorResponse
+		router.Get("/assets", h.handleGetContentAssets)
 		// swagger:route PUT /admin/api/v1/content/asset admin contentPutAsset
 		//
 		// Upload content asset
@@ -86,7 +107,6 @@ func (h *AdminContentHandler) Register(router chi.Router) {
 		//
 		// Responses:
 		//   201: contentAssetPutResponse
-		//   400: errorResponse
 		//   401: errorResponse
 		//   500: errorResponse
 		router.Put("/asset", h.handlePutContentAsset)
@@ -98,11 +118,21 @@ func (h *AdminContentHandler) Register(router chi.Router) {
 		//
 		// Responses:
 		//   204: emptyResponse
-		//   400: errorResponse
 		//   401: errorResponse
 		//   500: errorResponse
 		router.Delete("/asset/{assetId}", h.handleDeleteContentAsset)
 	})
+}
+
+func (h *AdminContentHandler) handleGetContentAssets(w http.ResponseWriter, r *http.Request) {
+	assets, err := h.getAssets.Invoke(r.Context())
+	if err != nil {
+		util.WriteError(w, err)
+		return
+	}
+	dtos := coreUtil.MapSlice(assets, dto.AssetFromDomain)
+
+	util.WriteResponseJson(w, dtos, http.StatusOK)
 }
 
 func (h *AdminContentHandler) handleDeleteContentAsset(w http.ResponseWriter, r *http.Request) {
