@@ -155,7 +155,7 @@ definitions:
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedTaskContent:
-        description: Represents task content.
+        description: Represents expected task content.
         properties:
             correct_option:
                 description: |-
@@ -205,7 +205,7 @@ definitions:
                 x-go-name: Options
         required:
             - description
-        title: TaskContentDto
+        title: ExpectedTaskContentDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     ExpectedTaskHint:
@@ -357,8 +357,136 @@ definitions:
         title: SectionPreviewDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    Task:
+        description: Represents task preview.
+        properties:
+            content:
+                $ref: '#/definitions/TaskContent'
+            description:
+                description: Task description
+                minLength: 1
+                type: string
+                x-go-name: Description
+            difficulty:
+                description: Task difficulty
+                format: int64
+                maximum: 10
+                minimum: 1
+                type: integer
+                x-go-name: Difficulty
+            done_at:
+                description: Date when task was done - nil if task was not done
+                format: date-time
+                type: string
+                x-go-name: DoneAt
+            id:
+                description: Section id -- UUID
+                type: string
+                x-go-name: Id
+            image_url:
+                description: Task image url
+                minLength: 1
+                type: string
+                x-go-name: ImageUrl
+            name:
+                description: Section name
+                type: string
+                x-go-name: Name
+        required:
+            - id
+            - name
+            - difficulty
+        title: TaskDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    TaskContent:
+        description: Represents task content.
+        properties:
+            correct_option:
+                description: |-
+                    Index of correct answer
+
+                    Required if kind is SINGLE_SELECTION.
+                format: int64
+                maximum: 63
+                minimum: 0
+                type: integer
+                x-go-name: CorrectOption
+            correct_options:
+                description: |-
+                    Indexes of correct answers
+
+                    Required if kind is MULTI_SELECTION.
+                items:
+                    format: int64
+                    type: integer
+                maxLength: 64
+                minLength: 1
+                type: array
+                x-go-name: CorrectOptions
+            description:
+                description: Task description
+                type: string
+                x-go-name: Description
+            hints:
+                description: Task hints
+                items:
+                    $ref: '#/definitions/TaskHint'
+                maxLength: 128
+                type: array
+                x-go-name: Hints
+            kind:
+                $ref: '#/definitions/TaskContentType'
+            options:
+                description: |-
+                    Possible answers
+
+                    Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
+                items:
+                    $ref: '#/definitions/TaskOption'
+                maxLength: 64
+                minLength: 2
+                type: array
+                x-go-name: Options
+        required:
+            - description
+        title: TaskContentDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     TaskContentType:
         type: string
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    TaskHint:
+        properties:
+            content:
+                description: Hint content
+                type: string
+                x-go-name: Content
+            id:
+                description: Hint id -- unique only in task
+                format: int64
+                type: integer
+                x-go-name: Id
+        required:
+            - id
+            - content
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    TaskOption:
+        properties:
+            content:
+                description: Option content
+                type: string
+                x-go-name: Content
+            id:
+                description: Option id -- unique only in task
+                format: int64
+                type: integer
+                x-go-name: Id
+        required:
+            - id
+            - content
+        type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     TaskPreview:
         description: Represents task preview.
@@ -523,6 +651,20 @@ paths:
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Health check
+    /api/v1/content/section/{sectionId}/tasks:
+        get:
+            description: This will return all tasks of section
+            operationId: tasksGet
+            responses:
+                "200":
+                    $ref: '#/responses/contentGetSectionsResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Get section tasks
+            tags:
+                - content
     /api/v1/content/technologies:
         get:
             description: This will return all technologies along with preview of their sections
@@ -650,6 +792,12 @@ responses:
         schema:
             items:
                 $ref: '#/definitions/Section'
+            type: array
+    contentGetTasksResponse:
+        description: ""
+        schema:
+            items:
+                $ref: '#/definitions/Task'
             type: array
     contentGetTechnologiesResponse:
         description: ""
