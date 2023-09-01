@@ -53,7 +53,6 @@ CREATE TABLE task (
   FOREIGN KEY (section_id) REFERENCES section(id) ON DELETE CASCADE
 );
 
-SELECT manage_updated_at('task');
 CREATE INDEX task_section_id_idx ON task (section_id);
 
 COMMIT;
