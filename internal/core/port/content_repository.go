@@ -39,4 +39,6 @@ type ContentRepository interface {
 	DeleteAsset(ctx context.Context, id string) error
 
 	GetAssets(ctx context.Context) ([]model.Asset, error)
+
+	GetSectionTasks(ctx context.Context, sectionID string) ([]model.Task, error)
 }

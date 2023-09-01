@@ -72,7 +72,7 @@ func (q *Queries) GetAllAssets(ctx context.Context) ([]Asset, error) {
 }
 
 const getAllSectionTasks = `-- name: GetAllSectionTasks :many
-SELECT id, section_id, title, description, image_url, difficulty, content, position, is_public, updated_at, created_at FROM task WHERE section_id = $1 ORDER BY position ASC
+SELECT id, section_id, title, description, image_url, difficulty, content, position, is_public, updated_at, created_at FROM task WHERE section_id = $1 AND position IS NOT NULL ORDER BY position ASC
 `
 
 func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID) ([]Task, error) {
@@ -211,7 +211,6 @@ func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) 
 const getAllTechnologiesWithSectionsPreview = `-- name: GetAllTechnologiesWithSectionsPreview :many
 SELECT technology.id, technology.title, technology.description, technology.image_url, technology.position, technology.updated_at, technology.created_at, 
   section.id as section_id, 
-  section.position, 
   section.title as section_title
 FROM technology
 JOIN section ON section.technology_id = technology.id
@@ -227,7 +226,6 @@ type GetAllTechnologiesWithSectionsPreviewRow struct {
 	UpdatedAt    pgtype.Timestamptz
 	CreatedAt    pgtype.Timestamptz
 	SectionID    pgtype.UUID
-	Position_2   int32
 	SectionTitle string
 }
 
@@ -249,7 +247,6 @@ func (q *Queries) GetAllTechnologiesWithSectionsPreview(ctx context.Context) ([]
 			&i.UpdatedAt,
 			&i.CreatedAt,
 			&i.SectionID,
-			&i.Position_2,
 			&i.SectionTitle,
 		); err != nil {
 			return nil, err
@@ -298,7 +295,6 @@ func (q *Queries) GetAllTechnologySections(ctx context.Context, technologyID pgt
 const getAllTechnolotySectionsWithTasksPreview = `-- name: GetAllTechnolotySectionsWithTasksPreview :many
 SELECT section.id, section.technology_id, section.title, section.description, section.image_url, section.position, section.updated_at, section.created_at, 
   task.id as task_id, 
-  task.position, 
   task.title as task_title, 
   task.is_public as task_is_public
 FROM section
@@ -317,7 +313,6 @@ type GetAllTechnolotySectionsWithTasksPreviewRow struct {
 	UpdatedAt    pgtype.Timestamptz
 	CreatedAt    pgtype.Timestamptz
 	TaskID       pgtype.UUID
-	Position_2   pgtype.Int4
 	TaskTitle    string
 	TaskIsPublic bool
 }
@@ -341,7 +336,6 @@ func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, 
 			&i.UpdatedAt,
 			&i.CreatedAt,
 			&i.TaskID,
-			&i.Position_2,
 			&i.TaskTitle,
 			&i.TaskIsPublic,
 		); err != nil {

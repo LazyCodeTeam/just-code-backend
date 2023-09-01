@@ -47,7 +47,7 @@ func TaskToDomain(task db.Task) (model.Task, error) {
 		ImageUrl:    util.FromPgString(task.ImageUrl),
 		Difficulty:  int(task.Difficulty),
 		IsPublic:    task.IsPublic,
-		Content:     content,
+		Content:     &content,
 	}, nil
 }
 

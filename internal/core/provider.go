@@ -16,5 +16,6 @@ func Providers() []interface{} {
 		usecase.NewSaveAsset,
 		usecase.NewDeleteAsset,
 		usecase.NewGetAssets,
+		usecase.NewGetTasks,
 	}
 }

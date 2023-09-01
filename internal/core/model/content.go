@@ -28,7 +28,8 @@ type Task struct {
 	Position    *int
 	Difficulty  int
 	IsPublic    bool
-	Content     TaskContent
+	Content     *TaskContent
+	DoneAt      *time.Time
 }
 
 type TaskContent struct {

@@ -1,7 +1,6 @@
 -- name: GetAllTechnologiesWithSectionsPreview :many
 SELECT technology.*, 
   section.id as section_id, 
-  section.position, 
   section.title as section_title
 FROM technology
 JOIN section ON section.technology_id = technology.id
@@ -13,7 +12,6 @@ SELECT * FROM technology ORDER BY position ASC;
 -- name: GetAllTechnolotySectionsWithTasksPreview :many
 SELECT section.*, 
   task.id as task_id, 
-  task.position, 
   task.title as task_title, 
   task.is_public as task_is_public
 FROM section
@@ -28,7 +26,7 @@ SELECT * FROM section WHERE technology_id = $1 ORDER BY position ASC;
 SELECT * FROM section;
 
 -- name: GetAllSectionTasks :many
-SELECT * FROM task WHERE section_id = $1 ORDER BY position ASC;
+SELECT * FROM task WHERE section_id = $1 AND position IS NOT NULL ORDER BY position ASC;
 
 -- name: GetAllTasks :many
 SELECT * FROM task;

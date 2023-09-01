@@ -22,6 +22,9 @@ func MapJoinedRows[TRow, TParent, TChild any](
 			parentLastIndex = index
 		}
 	}
+	if len(rows) == 0 {
+		return parents
+	}
 	parent := parentMapper(rows[parentLastIndex], children[parentLastIndex:])
 	parents = append(parents, parent)
 
