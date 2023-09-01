@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
 )
 
@@ -28,6 +29,9 @@ func (s *DeleteAsset) Invoke(ctx context.Context, id string) error {
 	}
 
 	err = s.fileRepository.DeleteContentAsset(ctx, id)
+	if err == port.FileNotFoundError {
+		return failure.New(failure.FailureTypeNotFound)
+	}
 	if err != nil {
 		return err
 	}

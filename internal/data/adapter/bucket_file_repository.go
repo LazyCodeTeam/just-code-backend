@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/storage"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/config"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
 )
 
 const (
@@ -60,6 +61,9 @@ func (r *BucketFileRepository) DeleteContentAsset(ctx context.Context, assetId s
 
 func (r *BucketFileRepository) deleteObject(ctx context.Context, path string) error {
 	err := r.bucketHandle.Object(path).Delete(ctx)
+	if err == storage.ErrObjectNotExist {
+		return port.FileNotFoundError
+	}
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to delete object from bucket", "err", err)
 		return err
