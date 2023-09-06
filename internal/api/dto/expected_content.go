@@ -117,7 +117,7 @@ type ExpectedTask struct {
 	// Task content
 	//
 	// required: true
-	Content ExpectedTaskContent `json:"content"     validate:"required,dive"`
+	Content ExpectedTaskContent `json:"content"     validate:"required"`
 }
 
 // ExpectedTaskContentDto
