@@ -27,7 +27,7 @@ resource "google_cloud_run_v2_service" "app" {
 
       env {
         name  = "CDN_BASE_URL"
-        value = "http://${google_compute_global_address.cdn.address}"
+        value = "https://storage.googleapis.com/${var.app_name}-${var.env}-bucket"
       }
 
       env {
