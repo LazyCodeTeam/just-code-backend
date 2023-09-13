@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"reflect"
-	"slices"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
@@ -122,11 +121,8 @@ func getExpectedContent(
 
 	for _, expectedTechnology := range expectedTechnologies {
 		technologies = append(technologies, expectedTechnology.Technology)
-		slices.Grow(sections, len(expectedTechnology.ExpectedSections))
 		for _, expectedSection := range expectedTechnology.ExpectedSections {
 			sections = append(sections, expectedSection.Section)
-			slices.Grow(tasks, len(expectedSection.ExpectedTasks))
-
 			for _, expectedTask := range expectedSection.ExpectedTasks {
 				tasks = append(tasks, expectedTask)
 			}
