@@ -1,6 +1,7 @@
 -- name: GetProfileById :one
 SELECT * FROM profile
-WHERE id = $1 LIMIT 1;
+WHERE id = $1 
+LIMIT 1;
 
 -- name: CreateProfile :one
 INSERT INTO profile (

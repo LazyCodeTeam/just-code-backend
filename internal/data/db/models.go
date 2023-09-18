@@ -5,8 +5,62 @@
 package db
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type AnswerResult string
+
+const (
+	AnswerResultFIRSTVALID AnswerResult = "FIRST_VALID"
+	AnswerResultVALID      AnswerResult = "VALID"
+	AnswerResultINVALID    AnswerResult = "INVALID"
+)
+
+func (e *AnswerResult) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AnswerResult(s)
+	case string:
+		*e = AnswerResult(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AnswerResult: %T", src)
+	}
+	return nil
+}
+
+type NullAnswerResult struct {
+	AnswerResult AnswerResult
+	Valid        bool // Valid is true if AnswerResult is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAnswerResult) Scan(value interface{}) error {
+	if value == nil {
+		ns.AnswerResult, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AnswerResult.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAnswerResult) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AnswerResult), nil
+}
+
+type Answer struct {
+	ID        int64
+	TaskID    pgtype.UUID
+	ProfileID string
+	Result    AnswerResult
+	CreatedAt pgtype.Timestamptz
+}
 
 type Asset struct {
 	ID        pgtype.UUID

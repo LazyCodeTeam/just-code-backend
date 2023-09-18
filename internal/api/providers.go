@@ -23,6 +23,11 @@ func Providers() []interface{} {
 			fx.ResultTags(`group:"routes"`),
 			fx.As(new(handler.Handler)),
 		),
+		fx.Annotate(
+			handler.NewAnswerHandler,
+			fx.ResultTags(`group:"routes"`),
+			fx.As(new(handler.Handler)),
+		),
 		handler.NewAdminContentHandler,
 	}
 }

@@ -55,7 +55,8 @@ func (q *Queries) CreateProfile(ctx context.Context, arg CreateProfileParams) (P
 
 const getProfileById = `-- name: GetProfileById :one
 SELECT id, name, avatar_url, first_name, last_name, updated_at, created_at FROM profile
-WHERE id = $1 LIMIT 1
+WHERE id = $1 
+LIMIT 1
 `
 
 func (q *Queries) GetProfileById(ctx context.Context, id string) (Profile, error) {

@@ -117,3 +117,12 @@ INSERT INTO asset (
 
 -- name: GetAllAssets :many
 SELECT * FROM asset;
+
+-- name: GetTaskById :one
+SELECT DISTINCT ON (answer.task_id) 
+  task.*, 
+  answer.created_at as answer_done_at
+FROM task 
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
+WHERE task.id = $1
+LIMIT 1;

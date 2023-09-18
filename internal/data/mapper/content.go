@@ -3,6 +3,7 @@ package mapper
 import (
 	"encoding/json"
 	"log/slog"
+	"time"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
@@ -142,4 +143,31 @@ func GetAllTechnolotySectionsWithTasksPreviewRowsToDomain(
 			}
 		},
 	)
+}
+
+func GetTaskByIdToDomain(task db.GetTaskByIdRow) (model.Task, error) {
+	var content model.TaskContent
+	err := json.Unmarshal(task.Content, &content)
+	if err != nil {
+		slog.Error("Failed to unmarshal task content", "err", err)
+		return model.Task{}, err
+	}
+
+	var doneAt *time.Time
+	if task.AnswerDoneAt.Valid {
+		doneAt = &task.AnswerDoneAt.Time
+	}
+
+	return model.Task{
+		Id:          util.FromPgUUID(task.ID),
+		SectionId:   util.FromPgUUID(task.SectionID),
+		Title:       task.Title,
+		Description: util.FromPgString(task.Description),
+		Position:    util.FromPgInt(task.Position),
+		ImageUrl:    util.FromPgString(task.ImageUrl),
+		Difficulty:  int(task.Difficulty),
+		IsPublic:    task.IsPublic,
+		DoneAt:      doneAt,
+		Content:     &content,
+	}, nil
 }

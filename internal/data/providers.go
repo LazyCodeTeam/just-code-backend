@@ -24,6 +24,7 @@ func Providers() []interface{} {
 		fx.Annotate(adapter.NewBucketFileRepository, fx.As(new(port.FileRepository))),
 		fx.Annotate(adapter.NewPgContentRepository, fx.As(new(port.ContentRepository))),
 		fx.Annotate(adapter.NewPgTransactionFactory, fx.As(new(port.TransactionFactory))),
+		fx.Annotate(adapter.NewPgAnswerRepository, fx.As(new(port.AnswerRepository))),
 	}
 }
 
