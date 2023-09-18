@@ -19,6 +19,7 @@ CREATE TABLE technology (
 );
 
 SELECT manage_updated_at('technology');
+CREATE INDEX technology_position_idx ON technology (position);
 
 
 CREATE TABLE section (
@@ -36,6 +37,7 @@ CREATE TABLE section (
 
 SELECT manage_updated_at('section');
 CREATE INDEX section_technology_id_idx ON section (technology_id);
+CREATE INDEX section_position_idx ON section (position);
 
 CREATE TABLE task (
   id uuid NOT NULL,
@@ -54,5 +56,6 @@ CREATE TABLE task (
 );
 
 CREATE INDEX task_section_id_idx ON task (section_id);
+CREATE INDEX task_position_idx ON task (position);
 
 COMMIT;

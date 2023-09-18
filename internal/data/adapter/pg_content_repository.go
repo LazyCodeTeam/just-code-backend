@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 	coreUtil "github.com/LazyCodeTeam/just-code-backend/internal/core/util"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
@@ -226,4 +228,26 @@ func (r *PgContentRepository) GetAssets(ctx context.Context) ([]model.Asset, err
 	assets := coreUtil.MapSlice(dbAssets, mapper.AssetToDomain)
 
 	return assets, nil
+}
+
+func (r *PgContentRepository) GetTaskById(ctx context.Context, id string) (*model.Task, error) {
+	dbTask, err := r.queries.GetTaskById(ctx, util.ToPgUUID(id))
+	if err == pgx.ErrNoRows {
+		return nil, nil
+	}
+
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to get task by id", "err", err)
+
+		return nil, err
+	}
+
+	task, err := mapper.GetTaskByIdToDomain(dbTask)
+	if err != nil {
+		slog.ErrorContext(ctx, "Failed to map task", "err", err)
+
+		return nil, err
+	}
+
+	return &task, nil
 }

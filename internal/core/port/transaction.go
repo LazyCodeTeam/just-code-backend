@@ -9,6 +9,8 @@ type TransactionFactory interface {
 type Transaction interface {
 	ContentRepository(ctx context.Context) ContentRepository
 
+	AnswerRepository(ctx context.Context) AnswerRepository
+
 	Commit(ctx context.Context) error
 
 	Rollback(ctx context.Context) error

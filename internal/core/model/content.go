@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
+)
 
 type Technology struct {
 	Id          string
@@ -32,6 +36,30 @@ type Task struct {
 	DoneAt      *time.Time
 }
 
+func (t *Task) IsAnswerValid(answer Answer) (AnswerResult, error) {
+	var isValid bool
+	var err error
+	switch {
+	case t.Content.Lesson != nil:
+		isValid, err = t.Content.Lesson.IsAnswerValid(answer)
+	case t.Content.SingleSelection != nil:
+		isValid, err = t.Content.SingleSelection.IsAnswerValid(answer)
+	case t.Content.MultiSelection != nil:
+		isValid, err = t.Content.MultiSelection.IsAnswerValid(answer)
+	}
+	if err != nil {
+		return AnswerResultInvalid, err
+	}
+
+	if isValid && t.DoneAt == nil {
+		return AnswerResultFirstValid, nil
+	} else if isValid {
+		return AnswerResultValid, nil
+	} else {
+		return AnswerResultInvalid, nil
+	}
+}
+
 type TaskContent struct {
 	Lesson          *LessonTaskContent
 	SingleSelection *SingleSelectionTaskContent
@@ -43,6 +71,10 @@ type LessonTaskContent struct {
 	Hints       []Hint
 }
 
+func (l *LessonTaskContent) IsAnswerValid(answer Answer) (bool, error) {
+	return true, nil
+}
+
 type SingleSelectionTaskContent struct {
 	Description     string
 	Options         []Option
@@ -50,11 +82,42 @@ type SingleSelectionTaskContent struct {
 	Hints           []Hint
 }
 
+func (s *SingleSelectionTaskContent) IsAnswerValid(answer Answer) (bool, error) {
+	if answer.AnswerData.SingleAnswer == nil {
+		return false, failure.New(failure.FailureTypeInvalidInput)
+	}
+
+	return s.CorrectOptionId == answer.AnswerData.SingleAnswer.Answer, nil
+}
+
 type MultiSelectionTaskContent struct {
 	Description      string
 	Options          []Option
 	CorrectOptionIds []int
 	Hints            []Hint
+}
+
+func (m *MultiSelectionTaskContent) IsAnswerValid(answer Answer) (bool, error) {
+	if answer.AnswerData.MultiAnswer == nil {
+		return false, failure.New(failure.FailureTypeInvalidInput)
+	}
+
+	if len(m.CorrectOptionIds) != len(answer.AnswerData.MultiAnswer.Answers) {
+		return false, nil
+	}
+
+	correctOptionsMap := make(map[int]bool)
+	for _, correctOptionId := range m.CorrectOptionIds {
+		correctOptionsMap[correctOptionId] = true
+	}
+	for _, answerOptionId := range answer.AnswerData.MultiAnswer.Answers {
+		if !correctOptionsMap[answerOptionId] {
+			return false, nil
+		}
+		delete(correctOptionsMap, answerOptionId)
+	}
+
+	return len(correctOptionsMap) == 0, nil
 }
 
 type Hint struct {

@@ -41,6 +41,10 @@ func (t *PgTransaction) ContentRepository(ctx context.Context) port.ContentRepos
 	return NewPgContentRepository(t.queries)
 }
 
+func (t *PgTransaction) AnswerRepository(ctx context.Context) port.AnswerRepository {
+	return NewPgAnswerRepository(t.queries)
+}
+
 func (t *PgTransaction) Commit(ctx context.Context) error {
 	if t.finished {
 		slog.WarnContext(ctx, "Failed to commit transaction: transaction already finished")
@@ -52,7 +56,7 @@ func (t *PgTransaction) Commit(ctx context.Context) error {
 
 	err := t.tx.Commit(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to commit transaction: %v", "err", err)
+		slog.ErrorContext(ctx, "Failed to commit transaction", "err", err)
 		return err
 	}
 
@@ -61,7 +65,7 @@ func (t *PgTransaction) Commit(ctx context.Context) error {
 
 func (t *PgTransaction) Rollback(ctx context.Context) error {
 	if t.finished {
-		slog.InfoContext(ctx, "Failed to rollback transaction: transaction already finished")
+		slog.DebugContext(ctx, "Skipping rollback: transaction already commited")
 		return nil
 	}
 	defer func() {

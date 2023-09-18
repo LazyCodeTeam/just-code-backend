@@ -4,7 +4,7 @@ import "github.com/LazyCodeTeam/just-code-backend/internal/core/model"
 
 // AssetDto
 //
-// # Represents asset
+// Represents asset.
 //
 // swagger:model
 type Asset struct {

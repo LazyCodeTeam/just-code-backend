@@ -349,6 +349,51 @@ func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, 
 	return items, nil
 }
 
+const getTaskById = `-- name: GetTaskById :one
+SELECT DISTINCT ON (answer.task_id) 
+  task.id, task.section_id, task.title, task.description, task.image_url, task.difficulty, task.content, task.position, task.is_public, task.updated_at, task.created_at, 
+  answer.created_at as answer_done_at
+FROM task 
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
+WHERE task.id = $1
+LIMIT 1
+`
+
+type GetTaskByIdRow struct {
+	ID           pgtype.UUID
+	SectionID    pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Difficulty   int32
+	Content      []byte
+	Position     pgtype.Int4
+	IsPublic     bool
+	UpdatedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	AnswerDoneAt pgtype.Timestamptz
+}
+
+func (q *Queries) GetTaskById(ctx context.Context, id pgtype.UUID) (GetTaskByIdRow, error) {
+	row := q.db.QueryRow(ctx, getTaskById, id)
+	var i GetTaskByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.SectionID,
+		&i.Title,
+		&i.Description,
+		&i.ImageUrl,
+		&i.Difficulty,
+		&i.Content,
+		&i.Position,
+		&i.IsPublic,
+		&i.UpdatedAt,
+		&i.CreatedAt,
+		&i.AnswerDoneAt,
+	)
+	return i, err
+}
+
 const insertAsset = `-- name: InsertAsset :one
 INSERT INTO asset (
   id,

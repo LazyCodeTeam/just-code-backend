@@ -41,4 +41,6 @@ type ContentRepository interface {
 	GetAssets(ctx context.Context) ([]model.Asset, error)
 
 	GetSectionTasks(ctx context.Context, sectionID string) ([]model.Task, error)
+
+	GetTaskById(ctx context.Context, id string) (*model.Task, error)
 }

@@ -2,8 +2,57 @@ basePath: /
 consumes:
     - application/json
 definitions:
+    Answer:
+        description: Represents answer to the task.
+        properties:
+            kind:
+                description: Kind of answer
+                enum:
+                    - EMPTY
+                    - ' SINGLE'
+                    - ' MULTI'
+                type: string
+                x-go-name: Kind
+            multi_answer:
+                description: Answers - required if kind is MULTI
+                items:
+                    format: int64
+                    type: integer
+                type: array
+                x-go-name: MultiAnswer
+            single_answer:
+                description: Answer - required if kind is SINGLE
+                format: int64
+                type: integer
+                x-go-name: SingleAnswer
+            task_id:
+                description: Task id
+                type: string
+                x-go-name: TaskId
+        required:
+            - task_id
+            - kind
+        title: AnswerDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
+    AnswerResult:
+        description: Represents result of answer validation.
+        properties:
+            result:
+                description: Result of answer validation
+                enum:
+                    - FIRST_VALID
+                    - ' VALID'
+                    - ' INVALID'
+                type: string
+                x-go-name: Result
+        required:
+            - result
+        title: AnswerResultDto
+        type: object
+        x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
     Asset:
-        description: '# Represents asset'
+        description: Represents asset.
         properties:
             id:
                 description: Asset id
@@ -651,6 +700,26 @@ paths:
                 "500":
                     $ref: '#/responses/errorResponse'
             summary: Health check
+    /api/v1/answer:
+        post:
+            description: Answer to the task
+            operationId: answerPost
+            parameters:
+                - in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/Answer'
+            responses:
+                "200":
+                    $ref: '#/responses/answerPostResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "404":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            tags:
+                - answer
     /api/v1/content/section/{sectionId}/tasks:
         get:
             description: This will return all tasks of section
@@ -777,6 +846,10 @@ paths:
 produces:
     - application/json
 responses:
+    answerPostResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/AnswerResult'
     contentAssetPutResponse:
         description: ""
         schema:
