@@ -72,13 +72,13 @@ func (q *Queries) GetAllAssets(ctx context.Context) ([]Asset, error) {
 }
 
 const getAllSectionTasks = `-- name: GetAllSectionTasks :many
-SELECT DISTINCT ON (answer.task_id)
+SELECT DISTINCT ON (task.position, task.id)
   task.id, task.section_id, task.title, task.description, task.image_url, task.difficulty, task.content, task.position, task.is_public, task.updated_at, task.created_at, 
   answer.created_at as answer_done_at
 FROM task
 LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
 WHERE task.section_id = $1 AND task.position IS NOT NULL 
-ORDER BY answer.task_id, task.position ASC
+ORDER BY task.position ASC, task.id ASC
 `
 
 type GetAllSectionTasksRow struct {
@@ -315,7 +315,8 @@ func (q *Queries) GetAllTechnologySections(ctx context.Context, technologyID pgt
 }
 
 const getAllTechnolotySectionsWithTasksPreview = `-- name: GetAllTechnolotySectionsWithTasksPreview :many
-SELECT section.id, section.technology_id, section.title, section.description, section.image_url, section.position, section.updated_at, section.created_at, 
+SELECT DISTINCT ON (section.position, task.position, task.id)
+  section.id, section.technology_id, section.title, section.description, section.image_url, section.position, section.updated_at, section.created_at, 
   task.id as task_id, 
   task.title as task_title, 
   task.is_public as task_is_public,
@@ -324,7 +325,7 @@ FROM section
 JOIN task ON task.section_id = section.id
 LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
 WHERE section.technology_id = $1 AND task.position IS NOT NULL
-ORDER BY answer.task_id, section.position ASC, task.position ASC
+ORDER BY section.position ASC, task.position ASC, task.id ASC
 `
 
 type GetAllTechnolotySectionsWithTasksPreviewRow struct {
