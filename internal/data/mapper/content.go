@@ -31,6 +31,33 @@ func SectionToDomain(section db.Section) model.Section {
 	}
 }
 
+func GetAllSectionTasksRowToDomain(task db.GetAllSectionTasksRow) (model.Task, error) {
+	var content model.TaskContent
+	err := json.Unmarshal(task.Content, &content)
+	if err != nil {
+		slog.Error("Failed to unmarshal task content", "err", err)
+		return model.Task{}, err
+	}
+
+	var doneAt *time.Time
+	if task.AnswerDoneAt.Valid {
+		doneAt = &task.AnswerDoneAt.Time
+	}
+
+	return model.Task{
+		Id:          util.FromPgUUID(task.ID),
+		SectionId:   util.FromPgUUID(task.SectionID),
+		Title:       task.Title,
+		Description: util.FromPgString(task.Description),
+		Position:    util.FromPgInt(task.Position),
+		ImageUrl:    util.FromPgString(task.ImageUrl),
+		Difficulty:  int(task.Difficulty),
+		IsPublic:    task.IsPublic,
+		Content:     &content,
+		DoneAt:      doneAt,
+	}, nil
+}
+
 func TaskToDomain(task db.Task) (model.Task, error) {
 	var content model.TaskContent
 	err := json.Unmarshal(task.Content, &content)
@@ -136,10 +163,16 @@ func GetAllTechnolotySectionsWithTasksPreviewRowsToDomain(
 			}
 		},
 		func(row db.GetAllTechnolotySectionsWithTasksPreviewRow) (parentID string, child model.TaskPreview) {
+			var doneAt *time.Time
+			if row.AnswerDoneAt.Valid {
+				doneAt = &row.AnswerDoneAt.Time
+			}
+
 			return util.FromPgUUID(row.ID), model.TaskPreview{
 				Id:       util.FromPgUUID(row.TaskID),
 				Title:    row.TaskTitle,
 				IsPublic: row.TaskIsPublic,
+				DoneAt:   doneAt,
 			}
 		},
 	)

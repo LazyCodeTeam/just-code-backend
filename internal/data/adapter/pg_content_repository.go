@@ -177,7 +177,7 @@ func (r *PgContentRepository) GetSectionTasks(
 		return nil, err
 	}
 
-	tasks, err := coreUtil.TryMapSlice(rows, mapper.TaskToDomain)
+	tasks, err := coreUtil.TryMapSlice(rows, mapper.GetAllSectionTasksRowToDomain)
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to map tasks", "err", err)
 

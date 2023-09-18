@@ -72,18 +72,39 @@ func (q *Queries) GetAllAssets(ctx context.Context) ([]Asset, error) {
 }
 
 const getAllSectionTasks = `-- name: GetAllSectionTasks :many
-SELECT id, section_id, title, description, image_url, difficulty, content, position, is_public, updated_at, created_at FROM task WHERE section_id = $1 AND position IS NOT NULL ORDER BY position ASC
+SELECT DISTINCT ON (answer.task_id)
+  task.id, task.section_id, task.title, task.description, task.image_url, task.difficulty, task.content, task.position, task.is_public, task.updated_at, task.created_at, 
+  answer.created_at as answer_done_at
+FROM task
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
+WHERE task.section_id = $1 AND task.position IS NOT NULL 
+ORDER BY answer.task_id, task.position ASC
 `
 
-func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID) ([]Task, error) {
+type GetAllSectionTasksRow struct {
+	ID           pgtype.UUID
+	SectionID    pgtype.UUID
+	Title        string
+	Description  pgtype.Text
+	ImageUrl     pgtype.Text
+	Difficulty   int32
+	Content      []byte
+	Position     pgtype.Int4
+	IsPublic     bool
+	UpdatedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	AnswerDoneAt pgtype.Timestamptz
+}
+
+func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID) ([]GetAllSectionTasksRow, error) {
 	rows, err := q.db.Query(ctx, getAllSectionTasks, sectionID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Task
+	var items []GetAllSectionTasksRow
 	for rows.Next() {
-		var i Task
+		var i GetAllSectionTasksRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.SectionID,
@@ -96,6 +117,7 @@ func (q *Queries) GetAllSectionTasks(ctx context.Context, sectionID pgtype.UUID)
 			&i.IsPublic,
 			&i.UpdatedAt,
 			&i.CreatedAt,
+			&i.AnswerDoneAt,
 		); err != nil {
 			return nil, err
 		}
@@ -296,11 +318,13 @@ const getAllTechnolotySectionsWithTasksPreview = `-- name: GetAllTechnolotySecti
 SELECT section.id, section.technology_id, section.title, section.description, section.image_url, section.position, section.updated_at, section.created_at, 
   task.id as task_id, 
   task.title as task_title, 
-  task.is_public as task_is_public
+  task.is_public as task_is_public,
+  answer.created_at as answer_done_at
 FROM section
 JOIN task ON task.section_id = section.id
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
 WHERE section.technology_id = $1 AND task.position IS NOT NULL
-ORDER BY section.position ASC, task.position ASC
+ORDER BY answer.task_id, section.position ASC, task.position ASC
 `
 
 type GetAllTechnolotySectionsWithTasksPreviewRow struct {
@@ -315,6 +339,7 @@ type GetAllTechnolotySectionsWithTasksPreviewRow struct {
 	TaskID       pgtype.UUID
 	TaskTitle    string
 	TaskIsPublic bool
+	AnswerDoneAt pgtype.Timestamptz
 }
 
 func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, technologyID pgtype.UUID) ([]GetAllTechnolotySectionsWithTasksPreviewRow, error) {
@@ -338,6 +363,7 @@ func (q *Queries) GetAllTechnolotySectionsWithTasksPreview(ctx context.Context, 
 			&i.TaskID,
 			&i.TaskTitle,
 			&i.TaskIsPublic,
+			&i.AnswerDoneAt,
 		); err != nil {
 			return nil, err
 		}

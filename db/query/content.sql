@@ -13,11 +13,13 @@ SELECT * FROM technology ORDER BY position ASC;
 SELECT section.*, 
   task.id as task_id, 
   task.title as task_title, 
-  task.is_public as task_is_public
+  task.is_public as task_is_public,
+  answer.created_at as answer_done_at
 FROM section
 JOIN task ON task.section_id = section.id
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
 WHERE section.technology_id = $1 AND task.position IS NOT NULL
-ORDER BY section.position ASC, task.position ASC;
+ORDER BY answer.task_id, section.position ASC, task.position ASC;
 
 -- name: GetAllTechnologySections :many
 SELECT * FROM section WHERE technology_id = $1 ORDER BY position ASC;
@@ -26,7 +28,13 @@ SELECT * FROM section WHERE technology_id = $1 ORDER BY position ASC;
 SELECT * FROM section;
 
 -- name: GetAllSectionTasks :many
-SELECT * FROM task WHERE section_id = $1 AND position IS NOT NULL ORDER BY position ASC;
+SELECT DISTINCT ON (answer.task_id)
+  task.*, 
+  answer.created_at as answer_done_at
+FROM task
+LEFT JOIN answer ON answer.task_id = task.id AND answer.result = 'FIRST_VALID'
+WHERE task.section_id = $1 AND task.position IS NOT NULL 
+ORDER BY answer.task_id, task.position ASC;
 
 -- name: GetAllTasks :many
 SELECT * FROM task;
