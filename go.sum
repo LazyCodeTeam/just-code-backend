@@ -14,8 +14,8 @@ cloud.google.com/go/longrunning v0.5.1 h1:Fr7TXftcqTudoyRJa113hyaqlGdiBQkp0Gq7tE
 cloud.google.com/go/longrunning v0.5.1/go.mod h1:spvimkwdz6SPWKEt/XBij79E9fiTkHSQl/fRUUQJYJc=
 cloud.google.com/go/storage v1.33.0 h1:PVrDOkIC8qQVa1P3SXGpQvfuJhN2LHOoyZvWs8D2X5M=
 cloud.google.com/go/storage v1.33.0/go.mod h1:Hhh/dogNRGca7IWv1RC2YqEn0c0G77ctA/OxflYkiD8=
-firebase.google.com/go/v4 v4.12.0 h1:I6dCkcWUMFNkFdWgzlf8SLWecQnKdFgJhMv5fT9l1qI=
-firebase.google.com/go/v4 v4.12.0/go.mod h1:60c36dWLK4+j05Vw5XMllek3b3PCynU3BfI46OSwsUE=
+firebase.google.com/go/v4 v4.12.1 h1:tDNvobifGsx/1HSFLnM0fmNfx/CDZSgsTO2KhZtgpcs=
+firebase.google.com/go/v4 v4.12.1/go.mod h1:60c36dWLK4+j05Vw5XMllek3b3PCynU3BfI46OSwsUE=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/MicahParks/keyfunc v1.9.0 h1:lhKd5xrFHLNOWrDc4Tyb/Q1AJ4LCzQ48GVJyVIID3+o=
 github.com/MicahParks/keyfunc v1.9.0/go.mod h1:IdnCilugA0O/99dW+/MkvlyrsX8+L8+x95xuVNtM5jw=

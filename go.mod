@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/storage v1.33.0
-	firebase.google.com/go/v4 v4.12.0
+	firebase.google.com/go/v4 v4.12.1
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-playground/validator/v10 v10.15.4
