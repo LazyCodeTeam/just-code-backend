@@ -175,8 +175,8 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 	switch randomType {
 	case dto.TaskContentTypeLesson:
 		return dto.ExpectedTaskContent{
-			Kind:        randomType,
-			Description: getRandomString(10, 50),
+			Kind:    randomType,
+			Content: getRandomString(10, 50),
 		}
 	case dto.TaskContentTypeSingleSelection:
 		options := getRandomSlice(2, 5, func() dto.ExpectedTaskOption {
@@ -187,7 +187,7 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 		validOption := getRandomNumber(0, len(options))
 		return dto.ExpectedTaskContent{
 			Kind:          randomType,
-			Description:   getRandomString(10, 50),
+			Content:       getRandomString(10, 50),
 			Options:       options,
 			CorrectOption: &validOption,
 		}
@@ -203,7 +203,7 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 
 		return dto.ExpectedTaskContent{
 			Kind:           randomType,
-			Description:    getRandomString(10, 50),
+			Content:        getRandomString(10, 50),
 			Options:        options,
 			CorrectOptions: validOptions,
 		}

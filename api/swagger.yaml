@@ -206,6 +206,10 @@ definitions:
     ExpectedTaskContent:
         description: Represents expected task content.
         properties:
+            content:
+                description: Task content
+                type: string
+                x-go-name: Content
             correct_option:
                 description: |-
                     Index of correct answer
@@ -228,10 +232,6 @@ definitions:
                 minLength: 1
                 type: array
                 x-go-name: CorrectOptions
-            description:
-                description: Task description
-                type: string
-                x-go-name: Description
             hints:
                 description: Task hints
                 items:
@@ -253,7 +253,7 @@ definitions:
                 type: array
                 x-go-name: Options
         required:
-            - description
+            - content
         title: ExpectedTaskContentDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
@@ -451,6 +451,10 @@ definitions:
     TaskContent:
         description: Represents task content.
         properties:
+            content:
+                description: Task description
+                type: string
+                x-go-name: Content
             correct_option:
                 description: |-
                     Index of correct answer
@@ -473,10 +477,6 @@ definitions:
                 minLength: 1
                 type: array
                 x-go-name: CorrectOptions
-            description:
-                description: Task description
-                type: string
-                x-go-name: Description
             hints:
                 description: Task hints
                 items:
@@ -498,7 +498,7 @@ definitions:
                 type: array
                 x-go-name: Options
         required:
-            - description
+            - content
         title: TaskContentDto
         type: object
         x-go-package: github.com/LazyCodeTeam/just-code-backend/internal/api/dto
@@ -724,6 +724,12 @@ paths:
         get:
             description: This will return all tasks of section
             operationId: tasksGet
+            parameters:
+                - in: path
+                  name: sectionId
+                  required: true
+                  type: string
+                  x-go-name: SectionId
             responses:
                 "200":
                     $ref: '#/responses/contentGetSectionsResponse'

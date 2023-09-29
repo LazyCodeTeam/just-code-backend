@@ -37,6 +37,12 @@ type getSectionsArgs struct {
 	TechnologyId string `json:"technologyId"`
 }
 
+// swagger:parameters tasksGet
+type getTasksArgs struct {
+	// in: path
+	SectionId string `json:"sectionId"`
+}
+
 type contentHandler struct {
 	validate        *validator.Validate
 	getTechnologies *usecase.GetTechnologies
