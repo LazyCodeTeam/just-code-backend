@@ -130,10 +130,10 @@ type ExpectedTaskContent struct {
 	//
 	// example: LESSON
 	Kind TaskContentType `json:"kind"            validate:"required,oneof=LESSON SINGLE_SELECTION MULTI_SELECTION"`
-	// Task description
+	// Task content
 	//
 	// required: true
-	Description string `json:"description"     validate:"required"`
+	Content string `json:"content"         validate:"required"`
 	// Possible answers
 	//
 	// Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
@@ -263,14 +263,14 @@ func contentToDomain(content ExpectedTaskContent) model.TaskContent {
 	case TaskContentTypeLesson:
 		return model.TaskContent{
 			Lesson: &model.LessonTaskContent{
-				Description: content.Description,
+				Description: content.Content,
 				Hints:       hintsToDomain(content.Hints),
 			},
 		}
 	case TaskContentTypeSingleSelection:
 		return model.TaskContent{
 			SingleSelection: &model.SingleSelectionTaskContent{
-				Description:     content.Description,
+				Description:     content.Content,
 				Options:         optionsToDomain(content.Options),
 				CorrectOptionId: *content.CorrectOption,
 				Hints:           hintsToDomain(content.Hints),
@@ -279,7 +279,7 @@ func contentToDomain(content ExpectedTaskContent) model.TaskContent {
 	case TaskContentTypeMultiSelection:
 		return model.TaskContent{
 			MultiSelection: &model.MultiSelectionTaskContent{
-				Description:      content.Description,
+				Description:      content.Content,
 				Options:          optionsToDomain(content.Options),
 				CorrectOptionIds: content.CorrectOptions,
 				Hints:            hintsToDomain(content.Hints),

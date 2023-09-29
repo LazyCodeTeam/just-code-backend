@@ -169,7 +169,7 @@ type TaskContent struct {
 	// Task description
 	//
 	// required: true
-	Description string `json:"description"`
+	Content string `json:"content"`
 	// Possible answers
 	//
 	// Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
@@ -279,14 +279,14 @@ func taskContentFromDomain(content *model.TaskContent) *TaskContent {
 	switch {
 	case content.Lesson != nil:
 		return &TaskContent{
-			Kind:        TaskContentTypeLesson,
-			Description: content.Lesson.Description,
-			Hints:       util.MapSlice(content.Lesson.Hints, taskHintFromDomain),
+			Kind:    TaskContentTypeLesson,
+			Content: content.Lesson.Description,
+			Hints:   util.MapSlice(content.Lesson.Hints, taskHintFromDomain),
 		}
 	case content.SingleSelection != nil:
 		return &TaskContent{
 			Kind:          TaskContentTypeSingleSelection,
-			Description:   content.SingleSelection.Description,
+			Content:       content.SingleSelection.Description,
 			Options:       util.MapSlice(content.SingleSelection.Options, taskOptionFromDomain),
 			CorrectOption: &content.SingleSelection.CorrectOptionId,
 			Hints:         util.MapSlice(content.SingleSelection.Hints, taskHintFromDomain),
@@ -294,7 +294,7 @@ func taskContentFromDomain(content *model.TaskContent) *TaskContent {
 	case content.MultiSelection != nil:
 		return &TaskContent{
 			Kind:           TaskContentTypeMultiSelection,
-			Description:    content.MultiSelection.Description,
+			Content:        content.MultiSelection.Description,
 			Options:        util.MapSlice(content.MultiSelection.Options, taskOptionFromDomain),
 			CorrectOptions: content.MultiSelection.CorrectOptionIds,
 			Hints:          util.MapSlice(content.MultiSelection.Hints, taskHintFromDomain),
