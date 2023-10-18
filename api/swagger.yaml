@@ -195,7 +195,6 @@ definitions:
                 x-go-name: Name
         required:
             - id
-            - name
             - difficulty
             - is_public
             - is_dynamic
@@ -429,7 +428,7 @@ definitions:
                 type: string
                 x-go-name: DoneAt
             id:
-                description: Section id -- UUID
+                description: Task id -- UUID
                 type: string
                 x-go-name: Id
             image_url:
@@ -438,12 +437,11 @@ definitions:
                 type: string
                 x-go-name: ImageUrl
             name:
-                description: Section name
+                description: Task name
                 type: string
                 x-go-name: Name
         required:
             - id
-            - name
             - difficulty
         title: TaskDto
         type: object
@@ -559,7 +557,6 @@ definitions:
                 x-go-name: Name
         required:
             - id
-            - name
             - is_public
         title: TaskPreviewDto
         type: object
@@ -732,7 +729,7 @@ paths:
                   x-go-name: SectionId
             responses:
                 "200":
-                    $ref: '#/responses/contentGetSectionsResponse'
+                    $ref: '#/responses/contentGetTasksResponse'
                 "401":
                     $ref: '#/responses/errorResponse'
                 "500":

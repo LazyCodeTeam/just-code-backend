@@ -47,7 +47,7 @@ func GetAllSectionTasksRowToDomain(task db.GetAllSectionTasksRow) (model.Task, e
 	return model.Task{
 		Id:          util.FromPgUUID(task.ID),
 		SectionId:   util.FromPgUUID(task.SectionID),
-		Title:       task.Title,
+		Title:       util.FromPgString(task.Title),
 		Description: util.FromPgString(task.Description),
 		Position:    util.FromPgInt(task.Position),
 		ImageUrl:    util.FromPgString(task.ImageUrl),
@@ -69,7 +69,7 @@ func TaskToDomain(task db.Task) (model.Task, error) {
 	return model.Task{
 		Id:          util.FromPgUUID(task.ID),
 		SectionId:   util.FromPgUUID(task.SectionID),
-		Title:       task.Title,
+		Title:       util.FromPgString(task.Title),
 		Description: util.FromPgString(task.Description),
 		Position:    util.FromPgInt(task.Position),
 		ImageUrl:    util.FromPgString(task.ImageUrl),
@@ -109,7 +109,7 @@ func UpsertTaskParamsFromDomain(task model.Task) (db.UpsertTaskParams, error) {
 	return db.UpsertTaskParams{
 		ID:          util.ToPgUUID(task.Id),
 		SectionID:   util.ToPgUUID(task.SectionId),
-		Title:       task.Title,
+		Title:       util.ToPgString(task.Title),
 		Description: util.ToPgString(task.Description),
 		Position:    util.ToPgInt4(task.Position),
 		ImageUrl:    util.ToPgString(task.ImageUrl),
@@ -170,7 +170,7 @@ func GetAllTechnolotySectionsWithTasksPreviewRowsToDomain(
 
 			return util.FromPgUUID(row.ID), model.TaskPreview{
 				Id:       util.FromPgUUID(row.TaskID),
-				Title:    row.TaskTitle,
+				Title:    util.FromPgString(row.TaskTitle),
 				IsPublic: row.TaskIsPublic,
 				DoneAt:   doneAt,
 			}
@@ -194,7 +194,7 @@ func GetTaskByIdToDomain(task db.GetTaskByIdRow) (model.Task, error) {
 	return model.Task{
 		Id:          util.FromPgUUID(task.ID),
 		SectionId:   util.FromPgUUID(task.SectionID),
-		Title:       task.Title,
+		Title:       util.FromPgString(task.Title),
 		Description: util.FromPgString(task.Description),
 		Position:    util.FromPgInt(task.Position),
 		ImageUrl:    util.FromPgString(task.ImageUrl),

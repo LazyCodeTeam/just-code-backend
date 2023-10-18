@@ -86,10 +86,10 @@ type ExpectedTask struct {
 	Id string `json:"id"          validate:"required,uuid"`
 	// Task title
 	//
-	// required: true
+	// required: false
 	// min length: 1
 	// max length: 1024
-	Name string `json:"name"        validate:"required,min=1,max=1024"`
+	Name *string `json:"name"        validate:"omitempty,min=1,max=1024"`
 	// Task description
 	//
 	// min length: 1

@@ -26,7 +26,7 @@ type Section struct {
 type Task struct {
 	Id          string
 	SectionId   string
-	Title       string
+	Title       *string
 	Description *string
 	ImageUrl    *string
 	Position    *int
@@ -137,7 +137,7 @@ type SectionPreview struct {
 
 type TaskPreview struct {
 	Id       string
-	Title    string
+	Title    *string
 	IsPublic bool
 	DoneAt   *time.Time
 }

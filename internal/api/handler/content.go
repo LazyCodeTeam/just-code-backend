@@ -95,7 +95,7 @@ func (h *contentHandler) Register(router chi.Router) {
 		// This will return all tasks of section
 		//
 		// Responses:
-		//   200: contentGetSectionsResponse
+		//   200: contentGetTasksResponse
 		//   401: errorResponse
 		//   500: errorResponse
 		r.Get("/section/{sectionId}/tasks", h.handleGetTasks)
