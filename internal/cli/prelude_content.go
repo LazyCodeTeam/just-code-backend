@@ -140,9 +140,11 @@ func getRandomSection(minTasks int, maxTasks int) dto.ExpectedSection {
 
 func getRandomTask() dto.ExpectedTask {
 	description := getRandomString(10, 50)
+	name := getRandomString(2, 10)
+
 	return dto.ExpectedTask{
 		Id:          getUuid(),
-		Name:        getRandomString(2, 10),
+		Name:        &name,
 		Description: &description,
 		Difficulty:  getRandomNumber(1, 10),
 		IsPublic:    getRandomBoolean(),

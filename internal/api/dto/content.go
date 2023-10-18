@@ -103,8 +103,8 @@ type TaskPreview struct {
 	Id string `json:"id"`
 	// Section name
 	//
-	// required: true
-	Name string `json:"name"`
+	// required: false
+	Name *string `json:"name"`
 	// Is task public - not public task will not be accessible for anonymous users
 	//
 	// required: true
@@ -121,15 +121,15 @@ type TaskPreview struct {
 //
 // swagger:model
 type Task struct {
-	// Section id -- UUID
+	// Task id -- UUID
 	//
 	// required: true
 	// format: uuid
 	Id string `json:"id"`
-	// Section name
+	// Task name
 	//
-	// required: true
-	Name string `json:"name"`
+	// required: false
+	Name *string `json:"name,omitempty"`
 	// Task description
 	//
 	// min length: 1
