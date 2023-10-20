@@ -44,7 +44,8 @@ func preludeContent() {
 	minSections := cmd.Int("min-sections", 5, "Minimum number of sections per technology")
 	maxTechnologies := cmd.Int("max-technologies", 10, "Maximum number of technologies")
 	minTechnologies := cmd.Int("min-technologies", 5, "Minimum number of technologies")
-	cmd.Parse(os.Args[2:])
+
+	_ = cmd.Parse(os.Args[2:])
 
 	token := *userToken
 	if token == "" && (*email == "" || *password == "" || *firebaseApiToken == "") {

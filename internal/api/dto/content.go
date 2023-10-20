@@ -10,9 +10,10 @@ import (
 type TaskContentType string
 
 const (
-	TaskContentTypeLesson          TaskContentType = "LESSON"
-	TaskContentTypeSingleSelection TaskContentType = "SINGLE_SELECTION"
-	TaskContentTypeMultiSelection  TaskContentType = "MULTI_SELECTION"
+	TaskContentTypeLesson           TaskContentType = "LESSON"
+	TaskContentTypeSingleSelection  TaskContentType = "SINGLE_SELECTION"
+	TaskContentTypeMultiSelection   TaskContentType = "MULTI_SELECTION"
+	TaskContentTypeLinesArrangement TaskContentType = "LINES_ARRANGEMENT"
 )
 
 // TechnologyDto
@@ -178,6 +179,14 @@ type TaskContent struct {
 	// min length: 2
 	// max length: 64
 	Options []TaskOption `json:"options,omitempty"`
+	// Lines to arrange
+	//
+	// Required if kind is LINES_ARRANGEMENT.
+	//
+	// required: false
+	// min length: 2
+	// max length: 64
+	Lines []TaskOption `json:"lines,omitempty"`
 	// Index of correct answer
 	//
 	// Required if kind is SINGLE_SELECTION.
@@ -194,6 +203,14 @@ type TaskContent struct {
 	// min length: 1
 	// max length: 64
 	CorrectOptions []int `json:"correct_options,omitempty"`
+	// Lines order
+	//
+	// Required if kind is LINES_ARRANGEMENT.
+	//
+	// required: false
+	// min length: 1
+	// max length: 64
+	LinesOrder []int `json:"lines_order,omitempty"`
 	// Task hints
 	//
 	// required: false
@@ -298,6 +315,13 @@ func taskContentFromDomain(content *model.TaskContent) *TaskContent {
 			Options:        util.MapSlice(content.MultiSelection.Options, taskOptionFromDomain),
 			CorrectOptions: content.MultiSelection.CorrectOptionIds,
 			Hints:          util.MapSlice(content.MultiSelection.Hints, taskHintFromDomain),
+		}
+	case content.LinesArrangement != nil:
+		return &TaskContent{
+			Kind:       TaskContentTypeLinesArrangement,
+			Content:    content.LinesArrangement.Description,
+			Lines:      util.MapSlice(content.LinesArrangement.Lines, taskOptionFromDomain),
+			LinesOrder: content.LinesArrangement.CorrectOrder,
 		}
 	}
 

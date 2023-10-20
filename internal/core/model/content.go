@@ -46,6 +46,8 @@ func (t *Task) IsAnswerValid(answer Answer) (AnswerResult, error) {
 		isValid, err = t.Content.SingleSelection.IsAnswerValid(answer)
 	case t.Content.MultiSelection != nil:
 		isValid, err = t.Content.MultiSelection.IsAnswerValid(answer)
+	case t.Content.LinesArrangement != nil:
+		isValid, err = t.Content.LinesArrangement.IsAnswerValid(answer)
 	}
 	if err != nil {
 		return AnswerResultInvalid, err
@@ -61,9 +63,35 @@ func (t *Task) IsAnswerValid(answer Answer) (AnswerResult, error) {
 }
 
 type TaskContent struct {
-	Lesson          *LessonTaskContent
-	SingleSelection *SingleSelectionTaskContent
-	MultiSelection  *MultiSelectionTaskContent
+	Lesson           *LessonTaskContent
+	SingleSelection  *SingleSelectionTaskContent
+	MultiSelection   *MultiSelectionTaskContent
+	LinesArrangement *LinesArrangementTaskContent
+}
+
+type LinesArrangementTaskContent struct {
+	Description  string
+	Lines        []Option
+	CorrectOrder []int
+	Hints        []Hint
+}
+
+func (l *LinesArrangementTaskContent) IsAnswerValid(answer Answer) (bool, error) {
+	if answer.AnswerData.MultiAnswer == nil {
+		return false, failure.New(failure.FailureTypeInvalidInput)
+	}
+
+	if len(l.CorrectOrder) != len(answer.AnswerData.MultiAnswer.Answers) {
+		return false, nil
+	}
+
+	for i, correctLineId := range l.CorrectOrder {
+		if answer.AnswerData.MultiAnswer.Answers[i] != correctLineId {
+			return false, nil
+		}
+	}
+
+	return true, nil
 }
 
 type LessonTaskContent struct {
