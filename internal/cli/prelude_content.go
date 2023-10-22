@@ -171,6 +171,7 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 		dto.TaskContentTypeLesson,
 		dto.TaskContentTypeSingleSelection,
 		dto.TaskContentTypeMultiSelection,
+		dto.TaskContentTypeLinesArrangement,
 	}
 
 	randomType := getRandomItem(possibleTypes)
@@ -210,6 +211,25 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 			Options:        options,
 			CorrectOptions: validOptions,
 		}
+	case dto.TaskContentTypeLinesArrangement:
+		lines := getRandomSlice(2, 5, func() dto.ExpectedTaskOption {
+			return dto.ExpectedTaskOption{
+				Content: getRandomString(10, 50),
+			}
+		},
+		)
+
+		correctOrder := getRandomSlice(1, len(lines), func() int {
+			return getRandomNumber(0, len(lines))
+		})
+
+		return dto.ExpectedTaskContent{
+			Kind:       randomType,
+			Content:    getRandomString(10, 50),
+			Lines:      lines,
+			LinesOrder: correctOrder,
+		}
+
 	default:
 		panic("Unknown task content type")
 	}

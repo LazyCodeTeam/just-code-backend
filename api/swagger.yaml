@@ -215,8 +215,8 @@ definitions:
 
                     Required if kind is SINGLE_SELECTION.
                 format: int64
-                maximum: 63
-                minimum: 0
+                maximum: 64
+                minimum: 1
                 type: integer
                 x-go-name: CorrectOption
             correct_options:
@@ -240,11 +240,34 @@ definitions:
                 x-go-name: Hints
             kind:
                 $ref: '#/definitions/TaskContentType'
+            lines:
+                description: |-
+                    Possible lines
+
+                    Required if kind is LINES_ARRANGEMENT.
+                items:
+                    $ref: '#/definitions/ExpectedTaskOption'
+                maxLength: 64
+                minLength: 2
+                type: array
+                x-go-name: Lines
+            lines_order:
+                description: |-
+                    Lines order
+
+                    Required if kind is LINES_ARRANGEMENT.
+                items:
+                    format: int64
+                    type: integer
+                maxLength: 64
+                minLength: 1
+                type: array
+                x-go-name: LinesOrder
             options:
                 description: |-
                     Possible answers
 
-                    Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
+                    Required if kind is SINGLE_SELECTION, MULTI_SELECTION or LINES_ARRANGEMENT.
                 items:
                     $ref: '#/definitions/ExpectedTaskOption'
                 maxLength: 64
@@ -484,6 +507,29 @@ definitions:
                 x-go-name: Hints
             kind:
                 $ref: '#/definitions/TaskContentType'
+            lines:
+                description: |-
+                    Lines to arrange
+
+                    Required if kind is LINES_ARRANGEMENT.
+                items:
+                    $ref: '#/definitions/TaskOption'
+                maxLength: 64
+                minLength: 2
+                type: array
+                x-go-name: Lines
+            lines_order:
+                description: |-
+                    Lines order
+
+                    Required if kind is LINES_ARRANGEMENT.
+                items:
+                    format: int64
+                    type: integer
+                maxLength: 64
+                minLength: 1
+                type: array
+                x-go-name: LinesOrder
             options:
                 description: |-
                     Possible answers
