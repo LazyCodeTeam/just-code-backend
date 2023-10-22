@@ -44,7 +44,8 @@ func preludeContent() {
 	minSections := cmd.Int("min-sections", 5, "Minimum number of sections per technology")
 	maxTechnologies := cmd.Int("max-technologies", 10, "Maximum number of technologies")
 	minTechnologies := cmd.Int("min-technologies", 5, "Minimum number of technologies")
-	cmd.Parse(os.Args[2:])
+
+	_ = cmd.Parse(os.Args[2:])
 
 	token := *userToken
 	if token == "" && (*email == "" || *password == "" || *firebaseApiToken == "") {
@@ -170,6 +171,7 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 		dto.TaskContentTypeLesson,
 		dto.TaskContentTypeSingleSelection,
 		dto.TaskContentTypeMultiSelection,
+		dto.TaskContentTypeLinesArrangement,
 	}
 
 	randomType := getRandomItem(possibleTypes)
@@ -209,6 +211,25 @@ func getRandomTaskContent() dto.ExpectedTaskContent {
 			Options:        options,
 			CorrectOptions: validOptions,
 		}
+	case dto.TaskContentTypeLinesArrangement:
+		lines := getRandomSlice(2, 5, func() dto.ExpectedTaskOption {
+			return dto.ExpectedTaskOption{
+				Content: getRandomString(10, 50),
+			}
+		},
+		)
+
+		correctOrder := getRandomSlice(1, len(lines), func() int {
+			return getRandomNumber(0, len(lines))
+		})
+
+		return dto.ExpectedTaskContent{
+			Kind:       randomType,
+			Content:    getRandomString(10, 50),
+			Lines:      lines,
+			LinesOrder: correctOrder,
+		}
+
 	default:
 		panic("Unknown task content type")
 	}

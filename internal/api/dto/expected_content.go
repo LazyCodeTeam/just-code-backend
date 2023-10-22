@@ -129,27 +129,35 @@ type ExpectedTaskContent struct {
 	// Type of content
 	//
 	// example: LESSON
-	Kind TaskContentType `json:"kind"            validate:"required,oneof=LESSON SINGLE_SELECTION MULTI_SELECTION"`
+	Kind TaskContentType `json:"kind"            validate:"required,oneof=LESSON SINGLE_SELECTION MULTI_SELECTION LINES_ARRANGEMENT"`
 	// Task content
 	//
 	// required: true
 	Content string `json:"content"         validate:"required"`
 	// Possible answers
 	//
-	// Required if kind is SINGLE_SELECTION or MULTI_SELECTION.
+	// Required if kind is SINGLE_SELECTION, MULTI_SELECTION or LINES_ARRANGEMENT.
 	//
 	// required: false
 	// min length: 2
 	// max length: 64
 	Options []ExpectedTaskOption `json:"options"         validate:"required_if=Kind SINGLE_SELECTION,required_if=Kind MULTI_SELECTION,omitempty,min=2,max=64,dive"`
+	// Possible lines
+	//
+	// Required if kind is LINES_ARRANGEMENT.
+	//
+	// required: false
+	// min length: 2
+	// max length: 64
+	Lines []ExpectedTaskOption `json:"lines"           validate:"required_if=Kind LINES_ARRANGEMENT,omitempty,min=2,max=64,dive"`
 	// Index of correct answer
 	//
 	// Required if kind is SINGLE_SELECTION.
 	//
 	// required: false
-	// min: 0
-	// max: 63
-	CorrectOption *int `json:"correct_option"  validate:"required_if=Kind SINGLE_SELECTION,omitempty,min=0,max=63"`
+	// min: 1
+	// max: 64
+	CorrectOption *int `json:"correct_option"  validate:"required_if=Kind SINGLE_SELECTION,omitempty,min=0,max=64"`
 	// Indexes of correct answers
 	//
 	// Required if kind is MULTI_SELECTION.
@@ -158,6 +166,14 @@ type ExpectedTaskContent struct {
 	// min length: 1
 	// max length: 64
 	CorrectOptions []int `json:"correct_options" validate:"required_if=Kind MULTI_SELECTION,omitempty"`
+	// Lines order
+	//
+	// Required if kind is LINES_ARRANGEMENT.
+	//
+	// required: false
+	// min length: 1
+	// max length: 64
+	LinesOrder []int `json:"lines_order"     validate:"required_if=Kind LINES_ARRANGEMENT,omitempty,min=1,max=64"`
 	// Task hints
 	//
 	// required: false
@@ -283,6 +299,15 @@ func contentToDomain(content ExpectedTaskContent) model.TaskContent {
 				Options:          optionsToDomain(content.Options),
 				CorrectOptionIds: content.CorrectOptions,
 				Hints:            hintsToDomain(content.Hints),
+			},
+		}
+	case TaskContentTypeLinesArrangement:
+		return model.TaskContent{
+			LinesArrangement: &model.LinesArrangementTaskContent{
+				Description:  content.Content,
+				Lines:        optionsToDomain(content.Lines),
+				CorrectOrder: content.LinesOrder,
+				Hints:        hintsToDomain(content.Hints),
 			},
 		}
 	default:

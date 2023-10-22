@@ -31,5 +31,4 @@ type HistoricalAnswer struct {
 	ProfileId    string
 	TaskId       string
 	AnswerResult AnswerResult
-	created_at   string
 }
