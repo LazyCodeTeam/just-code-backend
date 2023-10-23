@@ -12,7 +12,7 @@ type Answer struct {
 	//
 	// required: true
 	// format: uuid
-	TaskId string `json:"task_id"`
+	TaskId string `json:"task_id"       validate:"required"`
 	// Kind of answer
 	//
 	// required: true
