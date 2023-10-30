@@ -10,7 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/google/uuid v1.4.0
 	github.com/jackc/pgx/v5 v5.4.3
-	go.uber.org/fx v1.20.0
+	go.uber.org/fx v1.20.1
 )
 
 require (
