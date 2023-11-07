@@ -44,13 +44,14 @@ func AcceptedBodyFileTypes(
 					return
 				}
 			}
-			util.WriteError(
-				w,
-				failure.NewWithArgs(failure.FailureTypeUnsupportedFileType, map[string]interface{}{
-					"supported_types": whitelisted,
-					"detected_type":   mime,
-				}),
+			e := failure.NewInputFailure(
+				failure.FailureTypeUnsupportedMediaType,
+				"supported_types",
+				whitelisted,
+				"detected_type",
+				mime,
 			)
+			util.WriteError(w, e)
 		})
 	}
 }

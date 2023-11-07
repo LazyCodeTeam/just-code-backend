@@ -47,21 +47,27 @@ func Validate[T any](ctx context.Context, dto T, validate *validator.Validate) e
 
 	var valError validator.ValidationErrors
 	if errors.As(err, &valError) {
-		args := make(map[string]interface{})
+		args := make([]interface{}, 0, len(valError)*2+1)
+		args = append(args, valError)
 
 		for _, e := range valError {
 			i := strings.Index(e.Namespace(), ".")
 			field := e.Namespace()[i+1:]
+			args = append(args, field)
+
 			msg := fmt.Sprintf("%v %v", e.Tag(), e.Param())
-			args[field] = strings.Trim(msg, " ")
+			args = append(args, msg)
 		}
 
-		return failure.NewWithArgs(failure.FailureTypeInvalidInput, args)
+		return failure.NewInputFailure(failure.FailureTypeValidation, args...)
 	}
 
-	return failure.NewWithArgs(failure.FailureTypeInvalidInput, map[string]interface{}{
-		"message": err.Error(),
-	})
+	return failure.NewInputFailure(
+		failure.FailureTypeValidation,
+		err,
+		"message",
+		err.Error(),
+	)
 }
 
 func DeserializeBody[T any](r *http.Request) (T, error) {
@@ -69,9 +75,11 @@ func DeserializeBody[T any](r *http.Request) (T, error) {
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
 		slog.WarnContext(r.Context(), "Deserialization error", "err", err)
-		return dto, failure.NewWithArgs(failure.FailureTypeInvalidInput, map[string]interface{}{
-			"message": err.Error(),
-		})
+		return dto, failure.NewInputFailure(
+			failure.FailureTypeInvalidFormat,
+			"message",
+			err.Error(),
+		)
 	}
 	return dto, nil
 }

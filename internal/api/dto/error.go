@@ -33,26 +33,22 @@ func ErrorFromDomain(err failure.Failure) Error {
 	}
 
 	return Error{
-		Code:       string(err.Type),
+		Code:       string(err.Code),
 		Args:       err.Args,
 		StatusCode: statusCode,
 	}
 }
 
 func mapTypeToStatusCode(err failure.Failure) int {
-	switch err.Type {
-	case failure.FailureTypeUnknown:
-		return http.StatusInternalServerError
-	case failure.FailureTypeInvalidInput:
-		return http.StatusBadRequest
-	case failure.FailureTypeUnauthorized:
-		return http.StatusUnauthorized
-	case failure.FailureTypeNotFound:
-		return http.StatusNotFound
-	case failure.FailureTypeValueNotUnique:
+	switch err.Group {
+	case failure.FailureGroupState:
 		return http.StatusConflict
-	case failure.FailureTypeUnsupportedFileType:
-		return http.StatusUnsupportedMediaType
+	case failure.FailureGroupInput:
+		return http.StatusBadRequest
+	case failure.FailureGroupNotFound:
+		return http.StatusNotFound
+	case failure.FailureGroupUnknown:
+		return http.StatusInternalServerError
 	}
 	return http.StatusInternalServerError
 }

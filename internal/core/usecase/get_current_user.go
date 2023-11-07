@@ -26,7 +26,7 @@ func (u *GetCurrentUser) Invoke(ctx context.Context) (model.Profile, error) {
 	}
 
 	if profile == nil {
-		return model.Profile{}, failure.New(failure.FailureTypeNotFound)
+		return model.Profile{}, failure.NewNotFoundFailure(failure.FailureTypeProfileNotFound)
 	}
 
 	return *profile, nil

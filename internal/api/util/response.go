@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/LazyCodeTeam/just-code-backend/internal/api/dto"
@@ -14,7 +15,7 @@ func WriteError(writer http.ResponseWriter, err error) {
 	if ok {
 		errorModel = e
 	} else {
-		errorModel = failure.New(failure.FailureTypeUnknown)
+		errorModel = failure.NewUnknownFailure(failure.FailureTypeUnknown, err)
 	}
 
 	dto := dto.ErrorFromDomain(*errorModel)
@@ -29,6 +30,9 @@ func WriteResponseJson(writer http.ResponseWriter, response interface{}, statusC
 		writer.WriteHeader(http.StatusOK)
 	}
 	if response != nil {
-		json.NewEncoder(writer).Encode(response)
+		err := json.NewEncoder(writer).Encode(response)
+		if err != nil {
+			slog.Error("Error while encoding response", "err", err)
+		}
 	}
 }

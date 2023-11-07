@@ -30,7 +30,7 @@ func (s *DeleteAsset) Invoke(ctx context.Context, id string) error {
 
 	err = s.fileRepository.DeleteContentAsset(ctx, id)
 	if err == port.FileNotFoundError {
-		return failure.New(failure.FailureTypeNotFound)
+		return failure.NewNotFoundFailure(failure.FailureTypeFileNotFound, err, "id", id)
 	}
 	if err != nil {
 		return err
