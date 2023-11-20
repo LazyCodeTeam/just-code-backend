@@ -63,10 +63,10 @@ func (t *PgTransaction) Commit(ctx context.Context) error {
 	return nil
 }
 
-func (t *PgTransaction) Rollback(ctx context.Context) error {
+func (t *PgTransaction) Rollback(ctx context.Context) {
 	if t.finished {
 		slog.DebugContext(ctx, "Skipping rollback: transaction already commited")
-		return nil
+		return
 	}
 	defer func() {
 		t.finished = true
@@ -75,8 +75,6 @@ func (t *PgTransaction) Rollback(ctx context.Context) error {
 	err := t.tx.Rollback(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to rollback transaction: %v", "err", err)
-		return err
+		return
 	}
-
-	return nil
 }

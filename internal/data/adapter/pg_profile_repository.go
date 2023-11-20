@@ -7,8 +7,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/LazyCodeTeam/just-code-backend/internal/core/failure"
 	"github.com/LazyCodeTeam/just-code-backend/internal/core/model"
+	"github.com/LazyCodeTeam/just-code-backend/internal/core/port"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/db"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/mapper"
 	"github.com/LazyCodeTeam/just-code-backend/internal/data/util"
@@ -53,12 +53,7 @@ func (r *PgProfileRepository) UpsertProfile(
 	_, err := r.queries.CreateProfile(ctx, queryParams)
 	if err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == duplicateKeyErrorCode {
-			return failure.NewWithArgs(
-				failure.FailureTypeValueNotUnique,
-				map[string]interface{}{
-					"key": pgErr.ConstraintName,
-				},
-			)
+			return port.NameNotUniqueError
 		}
 		slog.ErrorContext(ctx, "Failed to upsert profile", "err", err)
 		return err

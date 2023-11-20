@@ -34,13 +34,15 @@ func (m *AuthTokenValidatorFactory) Get(
 
 			result, err := m.client.VerifyIDToken(r.Context(), token)
 			if err != nil {
-				util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
+				e := failure.NewAuthFailure(failure.FailureTypeUnauthorized, err)
+				util.WriteError(w, e)
 				return
 			}
 			authData, err := getAuthDataFromToken(result)
 			if err != nil {
 				slog.WarnContext(r.Context(), "Error getting auth data from token", "err", err)
-				util.WriteError(w, failure.New(failure.FailureTypeUnauthorized))
+				e := failure.NewAuthFailure(failure.FailureTypeUnauthorized, err)
+				util.WriteError(w, e)
 				return
 			}
 			ctx := coreUtil.ContextWithAuthData(r.Context(), authData)
@@ -54,7 +56,7 @@ func (m *AuthTokenValidatorFactory) Get(
 					"allowedRoles",
 					allowedRoles,
 				)
-				util.WriteError(w, failure.New(failure.FailureTypeNotFound))
+				util.WriteError(w, failure.NewNotFoundFailure(failure.FailureTypeNotFound))
 				return
 			}
 

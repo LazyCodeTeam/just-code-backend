@@ -78,7 +78,11 @@ type LinesArrangementTaskContent struct {
 
 func (l *LinesArrangementTaskContent) IsAnswerValid(answer Answer) (bool, error) {
 	if answer.AnswerData.MultiAnswer == nil {
-		return false, failure.New(failure.FailureTypeInvalidInput)
+		return false, failure.NewInputFailure(
+			failure.FailureTypeInvalidAnswerType,
+			"expected_type",
+			"multi_answer",
+		)
 	}
 
 	if len(l.CorrectOrder) != len(answer.AnswerData.MultiAnswer.Answers) {
@@ -112,7 +116,11 @@ type SingleSelectionTaskContent struct {
 
 func (s *SingleSelectionTaskContent) IsAnswerValid(answer Answer) (bool, error) {
 	if answer.AnswerData.SingleAnswer == nil {
-		return false, failure.New(failure.FailureTypeInvalidInput)
+		return false, failure.NewInputFailure(
+			failure.FailureTypeInvalidAnswerType,
+			"expected_type",
+			"single_answer",
+		)
 	}
 
 	return s.CorrectOptionId == answer.AnswerData.SingleAnswer.Answer, nil
@@ -127,7 +135,11 @@ type MultiSelectionTaskContent struct {
 
 func (m *MultiSelectionTaskContent) IsAnswerValid(answer Answer) (bool, error) {
 	if answer.AnswerData.MultiAnswer == nil {
-		return false, failure.New(failure.FailureTypeInvalidInput)
+		return false, failure.NewInputFailure(
+			failure.FailureTypeInvalidAnswerType,
+			"expected_type",
+			"multi_answer",
+		)
 	}
 
 	if len(m.CorrectOptionIds) != len(answer.AnswerData.MultiAnswer.Answers) {

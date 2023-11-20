@@ -35,7 +35,7 @@ func (s *SaveAnswer) Invoke(
 	}
 
 	if task == nil {
-		return model.HistoricalAnswer{}, failure.New(failure.FailureTypeNotFound)
+		return model.HistoricalAnswer{}, failure.NewNotFoundFailure(failure.FailureTypeNotFound)
 	}
 
 	result, err := task.IsAnswerValid(answer)
@@ -48,7 +48,10 @@ func (s *SaveAnswer) Invoke(
 		TaskId:       answer.TaskId,
 		AnswerResult: result,
 	}
-	answerRepository.SaveHistoricalAnswer(ctx, historicalAnswer)
+	err = answerRepository.SaveHistoricalAnswer(ctx, historicalAnswer)
+	if err != nil {
+		return model.HistoricalAnswer{}, err
+	}
 
 	err = transaction.Commit(ctx)
 	if err != nil {
